@@ -94,6 +94,7 @@ namespace PokerSimulator
             }
 
             //Eliminate Straight Hands
+            draw = false;
             BoardValues.Sort();
             for (i = 2; i < board.Count; i++)
             {
