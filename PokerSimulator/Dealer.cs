@@ -85,7 +85,7 @@ namespace PokerSimulator
 
             Console.Write("Do you want the same random hands dealt each time? (Choose no for new hands each time)");
 
-            while (inString.Trim() != "Y" && inString.Trim() != "N")
+            while (inString.Trim().ToUpper() != "Y" && inString.Trim().ToUpper() != "N")
             {
                 Console.WriteLine();
                 Console.Write("Y/N: ");
@@ -131,7 +131,7 @@ namespace PokerSimulator
                         deck.DealSpecific(specHands[j], specHands[j + 1]);
                     deck.DealRandom(randomHands);
                     deck.DealBoard();
-                    wc.hands = deck.DealtHandList;
+                    wc.GetWinner(deck.DealtHandList, deck.Board);
                 }
             }
             else
@@ -146,7 +146,7 @@ namespace PokerSimulator
                     for (int j = 0; j < specHands.Count; j += 2)
                         deck.DealSpecific(specHands[j], specHands[j + 1]);
                     deck.DealBoard();
-                    wc.hands = deck.DealtHandList;
+                    wc.GetWinner(deck.DealtHandList, deck.Board);
                 }
             }
             stopWatch.Stop();
