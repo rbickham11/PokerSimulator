@@ -25,7 +25,7 @@ namespace PokerSimulator
             string inString;
             string[] cardStrings = new string[2];
             int card1, card2, numHands;
-            bool randomChange;
+            bool randomChange = false;
 
             Console.WriteLine("Enter up to {0} specific hands to be dealt, separating the cards by a space (Ex. \"AS KD\"). Press Enter without typing anything when finished.\n", MAX_HANDS);
 
@@ -88,18 +88,19 @@ namespace PokerSimulator
                 break;
             }
 
-            Console.Write("Do you want the same random hands dealt each time? (Choose no for new hands each time)");
-
-            while (inString.Trim().ToUpper() != "Y" && inString.Trim().ToUpper() != "N")
+            if (randomHands > 0)
             {
-                Console.WriteLine();
-                Console.Write("Y/N: ");
-                inString = Console.ReadLine();
+                Console.Write("Do you want different random hands dealt each time? (Choose no for the same {0} hands each time)", randomHands);
+
+                while (inString != "Y" && inString != "N")
+                {
+                    Console.WriteLine();
+                    Console.Write("Y/N: ");
+                    inString = Console.ReadLine().Trim().ToUpper();
+                }
+                if (inString == "Y")
+                    randomChange = true;
             }
-            if (inString == "Y")
-                randomChange = false;
-            else
-                randomChange = true;
 
             while (true)
             {
