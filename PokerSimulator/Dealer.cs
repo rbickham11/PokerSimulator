@@ -67,6 +67,11 @@ namespace PokerSimulator
                 inString = Console.ReadLine();
                 if (int.TryParse(inString, out randomHands))
                 {
+                    if (randomHands + deck.HandsDealt == 0)
+                    {
+                        Console.WriteLine("There must be at least one hand, try again.");
+                        continue;
+                    }
                     if (randomHands + deck.HandsDealt <= MAX_HANDS)
                         deck.DealRandom(randomHands);
                     else

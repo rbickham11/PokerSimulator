@@ -48,6 +48,7 @@ namespace PokerSimulator
         public void CollectCards()
         {
             deck = new List<int>();
+            Board = new List<int>();
             for (int i = 0; i < DeckSize; i++)
                 deck.Add(i);
 
