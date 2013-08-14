@@ -31,6 +31,7 @@ namespace PokerSimulator
 
             int i, j;
             bool handFound = false;
+            string a = "a ";
             dontCheck = new BitArray(Ranks.Count);
 
             eliminateHands();
@@ -52,6 +53,9 @@ namespace PokerSimulator
                         if (rankCheck(i))
                         {
                             handFound = true;
+                            if (i == 0 || i == 2 || i == 3 || i == 7)
+                                a = string.Empty;
+                            Console.WriteLine("The winner is Player {0} with {1}{2}", j / 2 + 1, a, Ranks[i]);
                             break;
                         }
 

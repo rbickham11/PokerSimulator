@@ -90,7 +90,8 @@ namespace PokerSimulator
 
             if (randomHands > 0)
             {
-                Console.Write("Do you want different random hands dealt each time? (Choose no for the same {0} hands each time)", randomHands);
+                Console.WriteLine("Do you want different random hands dealt each time?");
+                Console.Write("(Choose no for the same {0} hands each time)", randomHands);
 
                 while (inString != "Y" && inString != "N")
                 {

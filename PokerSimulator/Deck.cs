@@ -62,7 +62,7 @@ namespace PokerSimulator
             for (int i = 0; i < numHands; i++)
             {
                 HandsDealt++;
-                //Console.Write("Player {0}'s hand is: ", HandsDealt);
+                Console.Write("Player {0}'s hand is: ", HandsDealt);
                 card = deck[0];
                 deck.RemoveAt(0);
                 DealtHandList.Add(card);
@@ -72,7 +72,7 @@ namespace PokerSimulator
                 deck.RemoveAt(0);
                 DealtHandList.Add(card);
                 PrintCard(card);
-                //Console.WriteLine();
+                Console.WriteLine();
             }
         }
 
@@ -84,17 +84,17 @@ namespace PokerSimulator
             DealtHandList.Add(card1);
             DealtHandList.Add(card2);
 
-            //Console.Write("Player {0}'s hand is: ", HandsDealt);
+            Console.Write("Player {0}'s hand is: ", HandsDealt);
             PrintCard(card1);
             PrintCard(card2);
-            //Console.WriteLine();
+            Console.WriteLine();
         }
 
         public void DealBoard()
         {
             int card;
 
-            //Console.Write("Board: ");
+            Console.Write("Board: ");
             for (int i = 0; i < 5; i++)
             {
                 HandsDealt++;
@@ -103,12 +103,12 @@ namespace PokerSimulator
                 Board.Add(card);
                 PrintCard(card);
             }
-            //Console.WriteLine();
+            Console.WriteLine();
         }
 
         public void PrintCard(int i)
         {
-            //Console.Write("{0}{1} ", CardValues[i % 13], SuitValues[i / 13]);
+            Console.Write("{0}{1} ", CardValues[i % 13], SuitValues[i / 13]);
         }
 
         public bool CardValid(string card)
