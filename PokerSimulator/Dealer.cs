@@ -17,7 +17,6 @@ namespace PokerSimulator
         public Dealer()
         {
             deck = new Deck();
-            wc = new WinnerChecker();
         }
        
         public void GetUserInput()
@@ -119,6 +118,8 @@ namespace PokerSimulator
 
         public void RunHands(int numHands, bool randomChange)
         {
+            wc = new WinnerChecker(deck.HandsDealt);
+
             var stopWatch = new Stopwatch();
             stopWatch.Restart();
             List<int> specHands = new List<int>();
@@ -156,6 +157,9 @@ namespace PokerSimulator
                     wc.GetWinner(deck.DealtHandList, deck.Board);
                 }
             }
+
+            for (i = 0; i < wc.winCounts.Count; i++)
+                Console.WriteLine("Player {0} wins: {1}", i, wc.winCounts[i]);
             stopWatch.Stop();
             Console.WriteLine("({0}ms)", stopWatch.ElapsedMilliseconds);
         }

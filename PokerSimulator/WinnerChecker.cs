@@ -12,22 +12,27 @@ namespace PokerSimulator
         private readonly List<char> CardValues = new List<char>() { '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A' };
         private readonly List<string> Ranks = new List<string>() { "High Card", "Pair", "Two Pair", "Three of a Kind", "Straight", "Flush", "Full House", "Four of a Kind", "Straight Flush" };
         
-        private List<int> hands;
-        private List<int> board;     
+        private List<int> _hands;
+        private List<int> _board;     
         private List<int> thisHand;
         private List<int> handValues;
+        
+        public List<int> winCounts { get; private set; }
 
         private BitArray dontCheck;
 
-        public WinnerChecker()
+        public WinnerChecker(int handsDealt)
         {
             thisHand = new List<int>() { -1, -1, -1, -1, -1, -1, -1 };
+            winCounts = new List<int>();
+            for (int i = 0; i < handsDealt; i++)
+                winCounts.Add(0);
         }
 
-        public void GetWinner(List<int> inHands, List<int> inBoard)
+        public void GetWinner(List<int> hands, List<int> board)
         {
-            hands = inHands;
-            board = inBoard;
+            _hands = hands;
+            _board = board;
 
             int i, j;
             bool handFound = false;
@@ -37,16 +42,16 @@ namespace PokerSimulator
             eliminateHands();
 
             for (i = 0; i < 5; i++)
-                thisHand[i] = board[i];
+                thisHand[i] = _board[i];
 
             for (i = 8; handFound == false; i--)
             {
                 if (!dontCheck[i])
                 {
-                    for (j = 0; j < hands.Count; j += 2)
+                    for (j = 0; j < _hands.Count && handFound == false; j += 2)
                     {
-                        thisHand[5] = hands[j];
-                        thisHand[6] = hands[j + 1];
+                        thisHand[5] = _hands[j];
+                        thisHand[6] = _hands[j + 1];
        
                         handValues = GetValueList(thisHand);
                         handValues.Sort();
@@ -56,12 +61,18 @@ namespace PokerSimulator
                             if (i == 0 || i == 2 || i == 3 || i == 7)
                                 a = string.Empty;
                             Console.WriteLine("The winner is Player {0} with {1}{2}", j / 2 + 1, a, Ranks[i]);
+                            winCounts[j / 2]++;
                             break;
                         }
 
                     }
                 }
             }
+            Console.Write("Board after GetWinner: ");
+            foreach (int k in thisHand)
+                Console.Write(k + " ");
+            Console.WriteLine();
+            Console.WriteLine("---------------------------------------------------------------");
         }
 
         public void eliminateHands()
@@ -69,8 +80,8 @@ namespace PokerSimulator
             int i;
             bool draw = false;
 
-            List<int> BoardValues = GetValueList(board);
-            List<int> BoardSuits = GetSuitList(board);
+            List<int> BoardValues = GetValueList(_board);
+            List<int> BoardSuits = GetSuitList(_board);
 
             switch (BoardValues.Distinct().Count())
             {
@@ -112,7 +123,7 @@ namespace PokerSimulator
             //Eliminate Straight Hands
             draw = false;
             BoardValues.Sort();
-            for (i = 2; i < board.Count; i++)
+            for (i = 2; i < _board.Count; i++)
             {
                 if (BoardValues[i] == BoardValues[i - 2] + 2)
                 {
@@ -131,12 +142,14 @@ namespace PokerSimulator
         public bool rankCheck(int rank)
         {
             int i, j, k, temp;
+            List<int> tempHand;
             bool pairFound = false;
             switch (rank)
             {
                 case 8:  //Straight Flush
-                    thisHand.Sort();
-                    if (isStraight(thisHand)) //This is a straight flush becuase thisHand values are still numbered 0-51
+                    tempHand = thisHand;
+                    tempHand.Sort();
+                    if (isStraight(tempHand)) //This is a straight flush becuase thisHand values are still numbered 0-51
                         return true;
                     return false;
                 case 7:  //Four of a Kind
