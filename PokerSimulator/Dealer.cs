@@ -159,7 +159,7 @@ namespace PokerSimulator
             }
 
             for (i = 0; i < wc.winCounts.Count; i++)
-                Console.WriteLine("Player {0} wins: {1}", i, wc.winCounts[i]);
+                Console.WriteLine("Player {0} wins: {1}", i + 1, wc.winCounts[i]);
             stopWatch.Stop();
             Console.WriteLine("({0}ms)", stopWatch.ElapsedMilliseconds);
         }

@@ -147,7 +147,7 @@ namespace PokerSimulator
             switch (rank)
             {
                 case 8:  //Straight Flush
-                    tempHand = thisHand;
+                    tempHand = new List<int>(thisHand);
                     tempHand.Sort();
                     if (isStraight(tempHand)) //This is a straight flush becuase thisHand values are still numbered 0-51
                         return true;
