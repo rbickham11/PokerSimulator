@@ -38,8 +38,7 @@ namespace PokerSimulator
                 inString = Console.ReadLine();
                 if (inString == string.Empty)
                     break;
-                inString.Trim();
-                if (inString.Length != 5)
+                if (inString.Trim().Length != 5)
                 {
                     Console.WriteLine("Invalid hand");
                     continue;
@@ -128,7 +127,6 @@ namespace PokerSimulator
             stopWatch.Restart();
             List<int> specHands = new List<int>();
             int i;
-            int players = deck.HandsDealt;
 
             if (randomChange == true)
             {
