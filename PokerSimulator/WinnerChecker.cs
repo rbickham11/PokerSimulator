@@ -68,9 +68,6 @@ namespace PokerSimulator
                     }
                 }
             }
-            Console.Write("Board after GetWinner: ");
-            foreach (int k in thisHand)
-                Console.Write(k + " ");
             Console.WriteLine();
             Console.WriteLine("---------------------------------------------------------------");
         }
