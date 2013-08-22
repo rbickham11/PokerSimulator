@@ -11,12 +11,14 @@ namespace PokerSimulator
     {
         const int MAX_HANDS = 10;
         private Deck deck;
-        private WinnerChecker wc;
+        private WinnerChecker winnerChecker;
         private int randomHands;
+        private OutFile outFile;
 
         public Dealer()
         {
-            deck = new Deck();
+            outFile = new OutFile();
+            deck = new Deck(outFile);
         }
        
         public void GetUserInput()
@@ -51,8 +53,8 @@ namespace PokerSimulator
                 }
                 if (deck.CardValid(cardStrings[0]) && deck.CardValid(cardStrings[1]))
                 {
-                    card1 = deck.ConvertCardString(cardStrings[0]);
-                    card2 = deck.ConvertCardString(cardStrings[1]);
+                    card1 = deck.CardFromString(cardStrings[0]);
+                    card2 = deck.CardFromString(cardStrings[1]);
                     if (deck.InDeck(card1) && deck.InDeck(card2))
                     {
                         deck.DealSpecific(card1, card2);
@@ -101,7 +103,9 @@ namespace PokerSimulator
                 if (inString == "Y")
                     randomChange = true;
             }
-
+            
+            deck.GettingUserInput = false;
+            
             while (true)
             {
                 Console.Write("Number of hands to simulate: ");
@@ -118,7 +122,7 @@ namespace PokerSimulator
 
         public void RunHands(int numHands, bool randomChange)
         {
-            wc = new WinnerChecker(deck.HandsDealt);
+            winnerChecker = new WinnerChecker(outFile, deck.HandsDealt);
 
             var stopWatch = new Stopwatch();
             stopWatch.Restart();
@@ -133,13 +137,14 @@ namespace PokerSimulator
 
                 for (i = 0; i < numHands; i++)
                 {
+                    outFile.AddLine("---------------------------------------------------------------");
                     deck.CollectCards();
                     deck.Shuffle();
                     for (int j = 0; j < specHands.Count; j += 2)
                         deck.DealSpecific(specHands[j], specHands[j + 1]);
                     deck.DealRandom(randomHands);
                     deck.DealBoard();
-                    wc.GetWinner(deck.DealtHandList, deck.Board);
+                    winnerChecker.GetWinner(deck.DealtHandList, deck.Board);
                 }
             }
             else
@@ -149,19 +154,26 @@ namespace PokerSimulator
 
                 for (i = 0; i < numHands; i++)
                 {
+                    outFile.AddLine("---------------------------------------------------------------");
                     deck.CollectCards();
                     deck.Shuffle();
                     for (int j = 0; j < specHands.Count; j += 2)
                         deck.DealSpecific(specHands[j], specHands[j + 1]);
                     deck.DealBoard();
-                    wc.GetWinner(deck.DealtHandList, deck.Board);
+                    winnerChecker.GetWinner(deck.DealtHandList, deck.Board);
                 }
             }
 
-            for (i = 0; i < wc.winCounts.Count; i++)
-                Console.WriteLine("Player {0} wins: {1}", i + 1, wc.winCounts[i]);
+            for (i = 0; i < winnerChecker.winCounts.Count; i++)
+                Console.WriteLine("Player {0} wins: {1} ({2:P})", i + 1, winnerChecker.winCounts[i], (double)winnerChecker.winCounts[i] / numHands);
+            for (i = winnerChecker.winCounts.Count - 1; i >= 0; i--)
+                outFile.AddTopLine(String.Format("Player {0} wins: {1} ({2:P})", i + 1, winnerChecker.winCounts[i], (double) winnerChecker.winCounts[i] / numHands));
+
+            string filePath = @"SimulationResults.txt";
+            outFile.WriteLinesToFile(filePath);
             stopWatch.Stop();
             Console.WriteLine("({0}ms)", stopWatch.ElapsedMilliseconds);
+            Process.Start(filePath);
         }
     }
 }

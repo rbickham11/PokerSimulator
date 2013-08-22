@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace PokerSimulator
 {
@@ -7,8 +9,7 @@ namespace PokerSimulator
         static void Main(string[] args)
         {
             var dealer = new Dealer();
-
-            Console.WriteLine("Poker Hand Simulator\n");
+            Console.WriteLine("Poker Hand Simulator");
             dealer.GetUserInput();
             Console.ReadKey();
         }

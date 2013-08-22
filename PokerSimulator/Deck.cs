@@ -10,15 +10,21 @@ namespace PokerSimulator
         public List<int> DealtHandList { get; private set; }
         public List<int> Board { get; private set; }
         public int HandsDealt { get; private set; }
-        
+        public bool GettingUserInput { get; set; }
+
         private List<int> deck;
-        private readonly List<char> CardValues = new List<char>() { '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A' };
-        private readonly List<char> SuitValues = new List<char>() { 'D', 'H', 'C', 'S' };
+        private OutFile outFile;
+
+        private readonly List<char> cardValues = new List<char>() { '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A' };
+        private readonly List<char> suitValues = new List<char>() { 'D', 'H', 'C', 'S' };
         private readonly Random random = new Random();
 
-        public Deck()
+        public Deck(OutFile file)
         {
             deck = new List<int>();
+            outFile = file;
+            GettingUserInput = true;
+
             DealtHandList = new List<int>();
             Board = new List<int>();
             for (int i = 0; i < DeckSize; i++)
@@ -30,7 +36,7 @@ namespace PokerSimulator
         public void Print()
         {
             foreach (int i in deck)
-                Console.WriteLine("{0}{1}", CardValues[i % 13], SuitValues[i / 13]);
+                Console.WriteLine("{0}{1}", cardValues[i % 13], suitValues[i / 13]);
         }
         
         public void Shuffle()
@@ -58,21 +64,21 @@ namespace PokerSimulator
 
         public void DealRandom(int numHands)
         {
-            int card;
+            int card1, card2;
             for (int i = 0; i < numHands; i++)
             {
                 HandsDealt++;
-                Console.Write("Player {0}'s hand is: ", HandsDealt);
-                card = deck[0];
+                card1 = deck[0];
                 deck.RemoveAt(0);
-                DealtHandList.Add(card);
-                PrintCard(card);
-                
-                card = deck[0];
+                DealtHandList.Add(card1);             
+                card2 = deck[0];
                 deck.RemoveAt(0);
-                DealtHandList.Add(card);
-                PrintCard(card);
-                Console.WriteLine();
+                DealtHandList.Add(card2);
+
+                if (GettingUserInput)
+                    Console.WriteLine("Player {0}'s hand is: {1}{2}", HandsDealt, CardToString(card1), CardToString(card2));
+                else
+                    outFile.AddLine(String.Format("Player {0}'s hand is: {1}{2}", HandsDealt, CardToString(card1), CardToString(card2)));
             }
         }
 
@@ -84,40 +90,35 @@ namespace PokerSimulator
             DealtHandList.Add(card1);
             DealtHandList.Add(card2);
 
-            Console.Write("Player {0}'s hand is: ", HandsDealt);
-            PrintCard(card1);
-            PrintCard(card2);
-            Console.WriteLine();
+            if (GettingUserInput)
+                Console.WriteLine("Player {0}'s hand is: {1}{2}", HandsDealt, CardToString(card1), CardToString(card2));
+            else
+                outFile.AddLine(String.Format("Player {0}'s hand is: {1}{2}", HandsDealt, CardToString(card1), CardToString(card2)));
         }
 
         public void DealBoard()
         {
             int card;
 
-            Console.Write("Board: ");
+            outFile.AppendLine("Board: ");
             for (int i = 0; i < 5; i++)
             {
                 HandsDealt++;
                 card = deck[0];
                 deck.RemoveAt(0);
                 Board.Add(card);
-                PrintCard(card);
+                outFile.AppendLine(CardToString(card));
             }
-            Console.WriteLine();
-        }
-
-        public void PrintCard(int i)
-        {
-            Console.Write("{0}{1} ", CardValues[i % 13], SuitValues[i / 13]);
+            outFile.AddLine();
         }
 
         public bool CardValid(string card)
         {
             bool cardValid = true;
 
-            if (!CardValues.Contains(card[0]))
+            if (!cardValues.Contains(card[0]))
                 cardValid = false;
-            else if (!SuitValues.Contains(card[1]))
+            else if (!suitValues.Contains(card[1]))
                 cardValid = false;
 
             if (!cardValid)
@@ -133,7 +134,7 @@ namespace PokerSimulator
         {
             if (!deck.Contains(card))
             {
-                PrintCard(card);
+                Console.Write(CardToString(card));
                 Console.WriteLine("was already dealt");
                 return false;
             }
@@ -141,9 +142,14 @@ namespace PokerSimulator
             return true;
         }
 
-        public int ConvertCardString(string card)
+        public int CardFromString(string card)
         {
-            return 13 * SuitValues.IndexOf(card[1]) + CardValues.IndexOf(card[0]);
+            return 13 * suitValues.IndexOf(card[1]) + cardValues.IndexOf(card[0]);
+        }
+
+        public string CardToString(int card)
+        {
+            return String.Format("{0}{1} ", cardValues[card % 13], suitValues[card / 13]);
         }
     }
 }

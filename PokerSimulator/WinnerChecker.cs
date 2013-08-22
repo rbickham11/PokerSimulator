@@ -11,9 +11,10 @@ namespace PokerSimulator
     {
         private readonly List<char> CardValues = new List<char>() { '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A' };
         private readonly List<string> Ranks = new List<string>() { "High Card", "Pair", "Two Pair", "Three of a Kind", "Straight", "Flush", "Full House", "Four of a Kind", "Straight Flush" };
-        
-        private List<int> _hands;
-        private List<int> _board;     
+
+        private OutFile outFile;
+        private List<int> hands;
+        private List<int> board;     
         private List<int> thisHand;
         private List<int> handValues;
         
@@ -21,18 +22,19 @@ namespace PokerSimulator
 
         private BitArray dontCheck;
 
-        public WinnerChecker(int handsDealt)
+        public WinnerChecker(OutFile file, int handsDealt)
         {
+            outFile = file;
             thisHand = new List<int>() { -1, -1, -1, -1, -1, -1, -1 };
             winCounts = new List<int>();
             for (int i = 0; i < handsDealt; i++)
                 winCounts.Add(0);
         }
 
-        public void GetWinner(List<int> hands, List<int> board)
+        public void GetWinner(List<int> inHands, List<int> inBoard)
         {
-            _hands = hands;
-            _board = board;
+            hands = inHands;
+            board = inBoard;
 
             int i, j;
             bool handFound = false;
@@ -42,16 +44,16 @@ namespace PokerSimulator
             eliminateHands();
 
             for (i = 0; i < 5; i++)
-                thisHand[i] = _board[i];
+                thisHand[i] = board[i];
 
             for (i = 8; handFound == false; i--)
             {
                 if (!dontCheck[i])
                 {
-                    for (j = 0; j < _hands.Count && handFound == false; j += 2)
+                    for (j = 0; j < hands.Count && handFound == false; j += 2)
                     {
-                        thisHand[5] = _hands[j];
-                        thisHand[6] = _hands[j + 1];
+                        thisHand[5] = hands[j];
+                        thisHand[6] = hands[j + 1];
        
                         handValues = GetValueList(thisHand);
                         handValues.Sort();
@@ -60,7 +62,8 @@ namespace PokerSimulator
                             handFound = true;
                             if (i == 0 || i == 2 || i == 3 || i == 7)
                                 a = string.Empty;
-                            Console.WriteLine("The winner is Player {0} with {1}{2}", j / 2 + 1, a, Ranks[i]);
+                            outFile.AddLine();
+                            outFile.AddLine(String.Format("The winner is Player {0} with {1}{2}", j / 2 + 1, a, Ranks[i]));
                             winCounts[j / 2]++;
                             break;
                         }
@@ -68,8 +71,6 @@ namespace PokerSimulator
                     }
                 }
             }
-            Console.WriteLine();
-            Console.WriteLine("---------------------------------------------------------------");
         }
 
         public void eliminateHands()
@@ -77,8 +78,8 @@ namespace PokerSimulator
             int i;
             bool draw = false;
 
-            List<int> BoardValues = GetValueList(_board);
-            List<int> BoardSuits = GetSuitList(_board);
+            List<int> BoardValues = GetValueList(board);
+            List<int> BoardSuits = GetSuitList(board);
 
             switch (BoardValues.Distinct().Count())
             {
@@ -120,7 +121,7 @@ namespace PokerSimulator
             //Eliminate Straight Hands
             draw = false;
             BoardValues.Sort();
-            for (i = 2; i < _board.Count; i++)
+            for (i = 2; i < board.Count; i++)
             {
                 if (BoardValues[i] == BoardValues[i - 2] + 2)
                 {
