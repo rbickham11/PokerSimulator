@@ -37,6 +37,7 @@ namespace PokerSimulator
             board = inBoard;
 
             int i, j;
+            int winningPlayer = 0;
             bool handFound = false;
             string a = "a ";
             dontCheck = new BitArray(Ranks.Count);
@@ -60,17 +61,21 @@ namespace PokerSimulator
                         if (rankCheck(i))
                         {
                             handFound = true;
-                            if (i == 0 || i == 2 || i == 3 || i == 7)
-                                a = string.Empty;
-                            outFile.AddLine();
-                            outFile.AddLine(String.Format("The winner is Player {0} with {1}{2}", j / 2 + 1, a, Ranks[i]));
-                            winCounts[j / 2]++;
+                            winningPlayer = j / 2 + 1;
+                            for (int k = 0; k < j; k++)
+                                hands.RemoveAt(0);
                             break;
                         }
 
                     }
                 }
             }
+            int winningRank = i + 1;
+            if (winningRank == 0 || winningRank == 2 || winningRank == 3 || winningRank == 7)
+                a = string.Empty;
+            outFile.AddLine();
+            outFile.AddLine(String.Format("The winner is Player {0} with {1}{2}", winningPlayer, a, Ranks[winningRank]));
+            winCounts[winningPlayer - 1]++;
         }
 
         public void eliminateHands()
@@ -147,8 +152,8 @@ namespace PokerSimulator
                 case 8:  //Straight Flush
                     tempHand = new List<int>(thisHand);
                     tempHand.Sort();
-                    if (isStraight(tempHand)) //This is a straight flush becuase thisHand values are still numbered 0-51
-                        return true;
+                    if (isStraight(tempHand) && isStraight(GetValueList(tempHand))) //This is a straight flush becuase thisHand values are still numbered 0-51
+                        return true;                                                //Second check eliminates overlap (Ex: Q-K-A-2-3)
                     return false;
                 case 7:  //Four of a Kind
                     for (i = 3; i < handValues.Count; i++)
@@ -233,15 +238,21 @@ namespace PokerSimulator
         public bool isStraight(List<int> hand)
         {
             bool straight = false;
-            for (int i = 4; i < hand.Count; i++)
+
+            if (hand[6] == 12 && hand[0] == 0 && hand[1] == 1 && hand[2] == 2 && hand[3] == 3) //Checking for A-2-3-4-5 straight
+                return true;
+            else
             {
-                if (hand[i] == hand[i - 4] + 4)
+                for (int i = 4; i < hand.Count; i++)
                 {
-                    straight = true;
-                    for (int j = i; j > i - 3; j--)
+                    if (hand[i] == hand[i - 4] + 4)
                     {
-                        if (hand[j] != hand[j - 1] + 1)
-                            return false;
+                        straight = true;
+                        for (int j = i; j > i - 3; j--)
+                        {
+                            if (hand[j] != hand[j - 1] + 1)
+                                return false;
+                        }
                     }
                 }
             }
