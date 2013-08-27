@@ -101,13 +101,17 @@ namespace PokerSimulator
             int card;
 
             outFile.AppendLine("Board: ");
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < 8; i++)
             {
-                HandsDealt++;
-                card = deck[0];
-                deck.RemoveAt(0);
-                Board.Add(card);
-                outFile.AppendLine(CardToString(card));
+                if (i == 0 || i == 4 || i == 6) //Burn Cards
+                    deck.RemoveAt(0);
+                else
+                {
+                    card = deck[0];
+                    deck.RemoveAt(0);
+                    Board.Add(card);
+                    outFile.AppendLine(CardToString(card));
+                }
             }
             outFile.AddLine();
         }
