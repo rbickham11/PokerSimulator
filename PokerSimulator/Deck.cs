@@ -18,7 +18,7 @@ namespace PokerSimulator
         private readonly List<char> cardValues = new List<char>() { '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A' };
         private readonly List<char> suitValues = new List<char>() { 'D', 'H', 'C', 'S' };
         private readonly Random random = new Random();
-
+        
         public Deck(OutFile file)
         {
             deck = new List<int>();

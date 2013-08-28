@@ -31,16 +31,19 @@ namespace PokerSimulator
                 winCounts.Add(0);
         }
 
-        public void GetWinner(List<int> inHands, List<int> inBoard)
+        public void FindWinner(List<int> inHands, List<int> inBoard)
         {
             hands = inHands;
             board = inBoard;
 
-            int i, j;
+            int i, j, k;
             int winningPlayer = 0;
             bool handFound = false;
             string a = "a ";
+            List<int> rankWinners = new List<int>();
+
             dontCheck = new BitArray(Ranks.Count);
+            
 
             eliminateHands();
 
@@ -51,22 +54,19 @@ namespace PokerSimulator
             {
                 if (!dontCheck[i])
                 {
-                    for (j = 0; j < hands.Count && handFound == false; j += 2)
+                    for (j = 0; j < hands.Count; j += 2)
                     {
                         thisHand[5] = hands[j];
                         thisHand[6] = hands[j + 1];
-       
+
                         handValues = GetValueList(thisHand);
                         handValues.Sort();
                         if (rankCheck(i))
                         {
                             handFound = true;
-                            winningPlayer = j / 2 + 1;
-                            for (int k = 0; k < j; k++)
-                                hands.RemoveAt(0);
-                            break;
+                            rankWinners.Add(thisHand[5]);
+                            rankWinners.Add(thisHand[6]);
                         }
-
                     }
                 }
             }
@@ -74,8 +74,10 @@ namespace PokerSimulator
             if (winningRank == 0 || winningRank == 2 || winningRank == 3 || winningRank == 7)
                 a = string.Empty;
             outFile.AddLine();
-            outFile.AddLine(String.Format("The winner is Player {0} with {1}{2}", winningPlayer, a, Ranks[winningRank]));
-            winCounts[winningPlayer - 1]++;
+            outFile.AddLine(String.Format("The players who have the high ranked hand ({0}{1}) are: ", a, Ranks[winningRank])); 
+            for(j = 0; j < rankWinners.Count; j += 2)
+                outFile.AddLine(String.Format("Player {0}", hands.IndexOf(rankWinners[j]) / 2 + 1));
+            //winCounts[winningPlayer - 1]++;
         }
 
         public void eliminateHands()
@@ -237,26 +239,16 @@ namespace PokerSimulator
         }
         public bool isStraight(List<int> hand)
         {
-            bool straight = false;
+            var distinctHand = new List<int>(hand.Distinct());
 
-            if (hand[6] == 12 && hand[0] == 0 && hand[1] == 1 && hand[2] == 2 && hand[3] == 3) //Checking for A-2-3-4-5 straight
+            if (distinctHand[distinctHand.Count - 1] == 12 && distinctHand[0] == 0 && distinctHand[1] == 1 && distinctHand[2] == 2 && distinctHand[3] == 3) //Checking for A-2-3-4-5 straight
                 return true;
-            else
+            for (int i = 0; i < distinctHand.Count - 4; i++)
             {
-                for (int i = 4; i < hand.Count; i++)
-                {
-                    if (hand[i] == hand[i - 4] + 4)
-                    {
-                        straight = true;
-                        for (int j = i; j > i - 3; j--)
-                        {
-                            if (hand[j] != hand[j - 1] + 1)
-                                return false;
-                        }
-                    }
-                }
+                if (distinctHand[i] == distinctHand[i + 4] - 4)
+                    return true;
             }
-            return straight;
+            return false;
         }
 
         public bool isFlush(List<int> hand)

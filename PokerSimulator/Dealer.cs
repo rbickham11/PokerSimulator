@@ -142,7 +142,7 @@ namespace PokerSimulator
                         deck.DealSpecific(specHands[j], specHands[j + 1]);
                     deck.DealRandom(randomHands);
                     deck.DealBoard();
-                    winnerChecker.GetWinner(deck.DealtHandList, deck.Board);
+                    winnerChecker.FindWinner(deck.DealtHandList, deck.Board);
                 }
             }
             else
@@ -158,7 +158,7 @@ namespace PokerSimulator
                     for (int j = 0; j < specHands.Count; j += 2)
                         deck.DealSpecific(specHands[j], specHands[j + 1]);
                     deck.DealBoard();
-                    winnerChecker.GetWinner(deck.DealtHandList, deck.Board);
+                    winnerChecker.FindWinner(deck.DealtHandList, deck.Board);
                 }
             }
 
