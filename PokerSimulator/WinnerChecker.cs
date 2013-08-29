@@ -41,6 +41,7 @@ namespace PokerSimulator
             bool handFound = false;
             string a = "a ";
             List<int> rankWinners = new List<int>();
+            List<int> fiveCardHands;
 
             dontCheck = new BitArray(Ranks.Count);
             
@@ -71,13 +72,59 @@ namespace PokerSimulator
                 }
             }
             int winningRank = i + 1;
+
+            if (rankWinners.Count == 2)  //If there's only one hand with the winning rank
+                winningPlayer = hands.IndexOf(rankWinners[0]) / 2 + 1;
+            else
+            {
+                fiveCardHands = getFiveCardHands(rankWinners, winningRank);
+                var possibleWinner = new BitArray(fiveCardHands.Count / 5, true);
+                int possibleCount = possibleWinner.Count;
+                for (i = 4; i >= 0; i--)
+                {
+                    if(possibleCount == 1)
+                        break;
+                    for (j = 0; j < fiveCardHands.Count; j += 5)
+                    {
+                        if (possibleWinner[j / 5])
+                        {
+                            for (k = 0; k < fiveCardHands.Count; k += 5)
+                            {
+                                if (k != j)
+                                {
+                                    if (possibleWinner[k / 5] && fiveCardHands[j + i] < fiveCardHands[k + i])
+                                    {
+                                        possibleWinner[j / 5] = false;
+                                        possibleCount--;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                if (possibleCount > 1)
+                    winningPlayer = 0;
+                else
+                {
+                    for (i = 0; i < possibleWinner.Count; i++)
+                        if (possibleWinner[i] == true)
+                            break;
+                    winningPlayer = hands.IndexOf(rankWinners[i * 2]) / 2 + 1;
+                }
+            }
+
             if (winningRank == 0 || winningRank == 2 || winningRank == 3 || winningRank == 7)
                 a = string.Empty;
             outFile.AddLine();
-            outFile.AddLine(String.Format("The players who have the high ranked hand ({0}{1}) are: ", a, Ranks[winningRank])); 
-            for(j = 0; j < rankWinners.Count; j += 2)
-                outFile.AddLine(String.Format("Player {0}", hands.IndexOf(rankWinners[j]) / 2 + 1));
-            //winCounts[winningPlayer - 1]++;
+            outFile.AddLine();
+            if (winningPlayer == 0)
+                outFile.AddLine("Chop");
+            else
+            {
+                outFile.AddLine(String.Format("The winner is Player {0} with {1}{2}", winningPlayer, a, Ranks[winningRank]));
+                winCounts[winningPlayer - 1]++;
+            }
         }
 
         public void eliminateHands()
@@ -236,6 +283,136 @@ namespace PokerSimulator
                     break;
             }
             return false;
+        }
+
+        public List<int> getFiveCardHands(List<int> rankWinners, int rank)
+        {
+            int i, j, k;
+            List<int> fiveCardHands = new List<int>();
+            List<int> sevenCardHand;
+
+            for (i = 0; i < rankWinners.Count; i += 2)
+            {
+                sevenCardHand = new List<int>(board);
+                sevenCardHand.Add(rankWinners[i]);
+                sevenCardHand.Add(rankWinners[i + 1]);
+                if(rank != 5 && rank != 8)
+                {
+                    sevenCardHand = GetValueList(sevenCardHand);
+                }
+                sevenCardHand.Sort();
+
+                switch (rank)
+                {
+                    case 0: //High Card
+                        sevenCardHand.RemoveRange(0, 2);
+                        fiveCardHands.AddRange(sevenCardHand);
+                        break;
+                    case 1: //Pair
+                    case 2: //Two Pair
+                        for (j = 0; j < sevenCardHand.Count - 1; j++)
+                            if(sevenCardHand[j] == sevenCardHand[j + 1])
+                                break;
+                        int dupCard = sevenCardHand[j];
+                        sevenCardHand.RemoveRange(j, 2);
+                        sevenCardHand.Add(dupCard);
+                        sevenCardHand.Add(dupCard);
+                        if (rank == 2)
+                        {
+                            for (j = 0; j < sevenCardHand.Count - 3; j++)
+                                if (sevenCardHand[j] == sevenCardHand[j + 1])
+                                    break;
+                            dupCard = sevenCardHand[j];
+                            sevenCardHand.RemoveRange(j, 2);
+                            sevenCardHand.Add(dupCard);
+                            sevenCardHand.Add(dupCard);
+                        }
+                        sevenCardHand.RemoveRange(0, 2);
+                        fiveCardHands.AddRange(sevenCardHand);
+                        break;
+                    case 3: //Three of a Kind
+                        for (j = 0; j < sevenCardHand.Count - 2; j++)
+                            if (sevenCardHand[j] == sevenCardHand[j + 2])
+                                break;
+                        dupCard = sevenCardHand[j];
+                        sevenCardHand.RemoveRange(j, 3);
+                        for (k = 0; k < 3; k++)
+                            sevenCardHand.Add(dupCard);
+                        sevenCardHand.RemoveRange(0, 2);
+                        fiveCardHands.AddRange(sevenCardHand);
+                        break;
+                    case 4: //Straight
+                        sevenCardHand = sevenCardHand.Distinct().ToList();
+                        for (j = sevenCardHand.Count - 1; j >= 4; j--)
+                        {
+                            if (sevenCardHand[j] == sevenCardHand[j - 4] + 4)
+                            {
+                                for (k = j; k > j - 5; k--)
+                                    fiveCardHands.Add(sevenCardHand[k]);
+                                break;
+                            }
+                        }
+                        break;
+                    case 5: //Flush
+                        for (j = sevenCardHand.Count - 1; j >= 4; j--)
+                        {
+                            if (GetSuit(sevenCardHand[j]) == GetSuit(sevenCardHand[j - 4]))
+                            {
+                                for (k = j; k > j - 5; k--)
+                                    fiveCardHands.Add(GetCardValue(sevenCardHand[k]));
+                                break;
+                            }
+                        }
+                        break;
+                    case 6: //Full House
+                        for (j = 0; j < sevenCardHand.Count - 2; j++)
+                            if (sevenCardHand[j] == sevenCardHand[j + 2])
+                                break;
+                        dupCard = sevenCardHand[j];
+                        sevenCardHand.RemoveRange(j, 3);
+                        for (k = 0; k < 3; k++)
+                            sevenCardHand.Add(dupCard);
+                        
+                        for (j = 0; j < sevenCardHand.Count - 4; j++)
+                            if (sevenCardHand[j] == sevenCardHand[j + 1])
+                                break;
+                        dupCard = sevenCardHand[j];
+                        sevenCardHand.RemoveRange(j, 2);
+                        sevenCardHand.Insert(0, dupCard);
+                        sevenCardHand.Insert(0, dupCard);
+                        
+                        sevenCardHand.RemoveRange(0, 2);
+                        fiveCardHands.AddRange(sevenCardHand);
+                        break;
+                    case 7: //Four of a Kind
+                        for (j = 0; j < sevenCardHand.Count - 3; j++)
+                            if (sevenCardHand[j] == sevenCardHand[j + 3])
+                                break;
+                        dupCard = sevenCardHand[j];
+                        sevenCardHand.RemoveRange(j, 4);
+                        for (k = 0; k < 4; k++)
+                            sevenCardHand.Add(dupCard);
+                        
+                            sevenCardHand.RemoveRange(0, 2);
+                        fiveCardHands.AddRange(sevenCardHand);
+                        break;
+                    case 8: //Straight Flush
+                        for (j = sevenCardHand.Count - 1; j >= 4; j--)
+                        {
+                            if (GetSuit(sevenCardHand[j]) == GetSuit(sevenCardHand[j - 4]))
+                            {
+                                if(GetCardValue(sevenCardHand[j]) == GetCardValue(sevenCardHand[j - 4] + 4))
+                                    for (k = j; k > j - 5; k--)
+                                        fiveCardHands.Add(GetCardValue(sevenCardHand[k]));
+                            }
+                        }
+                        break;
+                    default:
+                        Console.WriteLine("getFiveCardHands rank error");
+                        break;
+                }
+            }
+            return fiveCardHands;
         }
         public bool isStraight(List<int> hand)
         {
