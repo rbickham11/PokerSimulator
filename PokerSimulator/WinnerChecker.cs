@@ -27,7 +27,7 @@ namespace PokerSimulator
             outFile = file;
             thisHand = new List<int>() { -1, -1, -1, -1, -1, -1, -1 };
             winCounts = new List<int>();
-            for (int i = 0; i < handsDealt; i++)
+            for (int i = 0; i < handsDealt + 1; i++)
                 winCounts.Add(0);
         }
 
@@ -119,12 +119,12 @@ namespace PokerSimulator
             outFile.AddLine();
             outFile.AddLine();
             if (winningPlayer == 0)
-                outFile.AddLine("Chop");
+                outFile.AddLine(String.Format("Chop ({0})", Ranks[winningRank]));
             else
             {
                 outFile.AddLine(String.Format("The winner is Player {0} with {1}{2}", winningPlayer, a, Ranks[winningRank]));
-                winCounts[winningPlayer - 1]++;
             }
+            winCounts[winningPlayer]++;
         }
 
         public void eliminateHands()
@@ -310,7 +310,7 @@ namespace PokerSimulator
                         break;
                     case 1: //Pair
                     case 2: //Two Pair
-                        for (j = 0; j < sevenCardHand.Count - 1; j++)
+                        for (j = sevenCardHand.Count - 2; j >= 0; j--)
                             if(sevenCardHand[j] == sevenCardHand[j + 1])
                                 break;
                         int dupCard = sevenCardHand[j];
@@ -319,7 +319,7 @@ namespace PokerSimulator
                         sevenCardHand.Add(dupCard);
                         if (rank == 2)
                         {
-                            for (j = 0; j < sevenCardHand.Count - 3; j++)
+                            for (j = sevenCardHand.Count - 4; j >= 0; j--)
                                 if (sevenCardHand[j] == sevenCardHand[j + 1])
                                     break;
                             dupCard = sevenCardHand[j];
@@ -331,7 +331,7 @@ namespace PokerSimulator
                         fiveCardHands.AddRange(sevenCardHand);
                         break;
                     case 3: //Three of a Kind
-                        for (j = 0; j < sevenCardHand.Count - 2; j++)
+                        for (j = sevenCardHand.Count - 3; j >= 0; j--)
                             if (sevenCardHand[j] == sevenCardHand[j + 2])
                                 break;
                         dupCard = sevenCardHand[j];
@@ -372,14 +372,14 @@ namespace PokerSimulator
                         sevenCardHand.RemoveRange(j, 3);
                         for (k = 0; k < 3; k++)
                             sevenCardHand.Add(dupCard);
-                        
-                        for (j = 0; j < sevenCardHand.Count - 4; j++)
+
+                        for (j = sevenCardHand.Count - 4; j >= 0; j--)
                             if (sevenCardHand[j] == sevenCardHand[j + 1])
                                 break;
                         dupCard = sevenCardHand[j];
                         sevenCardHand.RemoveRange(j, 2);
-                        sevenCardHand.Insert(0, dupCard);
-                        sevenCardHand.Insert(0, dupCard);
+                        sevenCardHand.Insert(2, dupCard);
+                        sevenCardHand.Insert(2, dupCard);
                         
                         sevenCardHand.RemoveRange(0, 2);
                         fiveCardHands.AddRange(sevenCardHand);

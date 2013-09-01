@@ -162,10 +162,13 @@ namespace PokerSimulator
                 }
             }
 
-            for (i = 0; i < winnerChecker.winCounts.Count; i++)
-                Console.WriteLine("Player {0} wins: {1} ({2:P})", i + 1, winnerChecker.winCounts[i], (double)winnerChecker.winCounts[i] / numHands);
-            for (i = winnerChecker.winCounts.Count - 1; i >= 0; i--)
-                outFile.AddTopLine(String.Format("Player {0} wins: {1} ({2:P})", i + 1, winnerChecker.winCounts[i], (double) winnerChecker.winCounts[i] / numHands));
+            for (i = 1; i < winnerChecker.winCounts.Count; i++)
+                Console.WriteLine("Player {0} wins: {1} ({2:P})", i, winnerChecker.winCounts[i], (double)winnerChecker.winCounts[i] / numHands);
+            Console.WriteLine("Chopped Pots: {0} ({1:P})", winnerChecker.winCounts[0], (double)winnerChecker.winCounts[0] / numHands);
+            
+            outFile.AddTopLine(String.Format("Chopped Pots: {0} ({1:P})", winnerChecker.winCounts[0], (double)winnerChecker.winCounts[0] / numHands));
+            for (i = winnerChecker.winCounts.Count - 1; i > 0; i--)
+                outFile.AddTopLine(String.Format("Player {0} wins: {1} ({2:P})", i, winnerChecker.winCounts[i], (double) winnerChecker.winCounts[i] / numHands));
 
             string filePath = @"SimulationResults.txt";
             outFile.WriteLinesToFile(filePath);
