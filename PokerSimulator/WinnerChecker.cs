@@ -321,8 +321,8 @@ namespace PokerSimulator
                                     break;
                             dupCard = sevenCardHand[j];
                             sevenCardHand.RemoveRange(j, 2);
-                            sevenCardHand.Insert(4, dupCard);
-                            sevenCardHand.Insert(4, dupCard);
+                            sevenCardHand.Insert(3, dupCard);
+                            sevenCardHand.Insert(3, dupCard);
                         }
                         sevenCardHand.RemoveRange(0, 2);
                         fiveCardHands.AddRange(sevenCardHand);
