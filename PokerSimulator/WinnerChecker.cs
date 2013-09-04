@@ -398,9 +398,12 @@ namespace PokerSimulator
                         {
                             if (GetSuit(sevenCardHand[j]) == GetSuit(sevenCardHand[j - 4]))
                             {
-                                if(GetCardValue(sevenCardHand[j]) == GetCardValue(sevenCardHand[j - 4] + 4))
+                                if (GetCardValue(sevenCardHand[j]) == GetCardValue(sevenCardHand[j - 4]) + 4)
+                                {
                                     for (k = j; k > j - 5; k--)
                                         fiveCardHands.Add(GetCardValue(sevenCardHand[k]));
+                                    break;
+                                }
                             }
                         }
                         break;
