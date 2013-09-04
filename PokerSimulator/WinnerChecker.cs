@@ -170,10 +170,11 @@ namespace PokerSimulator
 
             //Eliminate Straight Hands
             draw = false;
-            BoardValues.Sort();
-            for (i = 2; i < board.Count; i++)
+            var DistinctBoardValues = BoardValues.Distinct().ToList();
+            DistinctBoardValues.Sort();
+            for (i = 2; i < DistinctBoardValues.Count; i++)
             {
-                if (BoardValues[i] == BoardValues[i - 2] + 2)
+                if (DistinctBoardValues[i] == DistinctBoardValues[i - 2] + 2)
                 {
                     draw = true;
                     break;
