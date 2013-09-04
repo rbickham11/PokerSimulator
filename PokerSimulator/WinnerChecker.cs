@@ -15,10 +15,9 @@ namespace PokerSimulator
         private List<int> board;     
         private List<int> thisHand;
         private List<int> handValues;
-        
-        public List<int> winCounts { get; private set; }
-
         private BitArray dontCheck;
+
+        public List<int> winCounts { get; private set; }
 
         public WinnerChecker(OutFile file, int handsDealt)
         {
@@ -43,7 +42,6 @@ namespace PokerSimulator
 
             dontCheck = new BitArray(Ranks.Count);
             
-
             eliminateHands();
 
             for (i = 0; i < 5; i++)

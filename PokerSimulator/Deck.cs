@@ -6,19 +6,18 @@ namespace PokerSimulator
     class Deck
     {
         const int DeckSize = 52;
-  
+        private readonly List<char> cardValues = new List<char>() { '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A' };
+        private readonly List<char> suitValues = new List<char>() { 'D', 'H', 'C', 'S' };
+        private readonly Random random = new Random();
+
+        private List<int> deck;
+        private OutFile outFile;
+
         public List<int> DealtHandList { get; private set; }
         public List<int> Board { get; private set; }
         public int HandsDealt { get; private set; }
         public bool GettingUserInput { get; set; }
 
-        private List<int> deck;
-        private OutFile outFile;
-
-        private readonly List<char> cardValues = new List<char>() { '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A' };
-        private readonly List<char> suitValues = new List<char>() { 'D', 'H', 'C', 'S' };
-        private readonly Random random = new Random();
-        
         public Deck(OutFile file)
         {
             deck = new List<int>();
