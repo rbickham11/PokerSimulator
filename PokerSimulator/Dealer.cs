@@ -35,7 +35,7 @@ namespace PokerSimulator
                 inString = Console.ReadLine();
                 if (inString == string.Empty)
                     break;
-                if (inString.Trim().Length != 5)
+                if (inString.Trim().Length != 5 || !inString.Contains(" "))
                 {
                     Console.WriteLine("Invalid hand");
                     continue;
