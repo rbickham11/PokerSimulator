@@ -35,7 +35,7 @@ namespace PokerSimulator
         public void Print()
         {
             foreach (int i in deck)
-                Console.WriteLine("{0}{1}", cardValues[i % 13], suitValues[i / 13]);
+                Console.WriteLine(CardToString(i));
         }
         
         public void Shuffle()
