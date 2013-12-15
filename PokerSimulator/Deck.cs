@@ -81,7 +81,7 @@ namespace PokerSimulator
             }
             if(!deck.Contains(card))
             {
-                throw new ArgumentException(String.Format("Card {0} ({1}) was already dealt.", card, CardToString(card)));
+                throw new ArgumentException(String.Format("{0} was already dealt.", CardToString(card)));
             }
             deck.Remove(card);
             dealtCards.Add(card);
@@ -98,7 +98,7 @@ namespace PokerSimulator
 
         public static string CardToString(int card)
         {
-            return String.Format("{0}{1} ", cardValues[card % 13], suitValues[card / 13]);
+            return String.Format("{0}{1}", cardValues[card % 13], suitValues[card / 13]);
         }
     }
 }
