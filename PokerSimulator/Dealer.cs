@@ -26,7 +26,7 @@ namespace PokerSimulator
         {
             string inString;
             string[] cardStrings = new string[2];
-            int card;
+            int card1, card2;
             int numHands;
             bool randomChange = false;
             handsDealt = 0;
@@ -53,15 +53,18 @@ namespace PokerSimulator
                     Console.WriteLine("Invalid Hand");
                     continue;
                 }
+
                 try
                 {   
-                    card = Deck.CardFromString(cardStrings[0]);
-                    deck.DealSpecific(card);
-                    dealtHands.Add(card);
-                    
-                    card = Deck.CardFromString(cardStrings[1]);
-                    deck.DealSpecific(card);
-                    dealtHands.Add(card);
+                    card1 = Deck.CardFromString(cardStrings[0]);
+                    deck.ValidateCard(card1);
+                    card2 = Deck.CardFromString(cardStrings[1]);
+                    deck.ValidateCard(card2);
+
+                    deck.DealSpecific(card1);
+                    dealtHands.Add(card1);                  
+                    deck.DealSpecific(card2);
+                    dealtHands.Add(card2);
 
                     handsDealt++;
                     PrintPlayerHand(true, handsDealt, dealtHands.GetRange(dealtHands.Count - 2, 2));
@@ -182,7 +185,7 @@ namespace PokerSimulator
                 outFile.AppendLine("Board: ");
                 foreach (int card in board)
                 {
-                    outFile.AppendLine(Deck.CardToString(card));
+                    outFile.AppendLine(Deck.CardToString(card) + " ");
                 }
                 winnerChecker.FindWinner(dealtHands, board);
             }
@@ -218,11 +221,11 @@ namespace PokerSimulator
         {
             if (console)
             {
-                Console.WriteLine("Player {0}'s hand is: {1}{2}", playerNumber, Deck.CardToString(hand[0]), Deck.CardToString(hand[1]));
+                Console.WriteLine("Player {0}'s hand is: {1} {2}", playerNumber, Deck.CardToString(hand[0]), Deck.CardToString(hand[1]));
             }
             else
             {
-                outFile.AddLine(String.Format("Player {0}'s hand is: {1}{2}", playerNumber, Deck.CardToString(hand[0]), Deck.CardToString(hand[1])));
+                outFile.AddLine(String.Format("Player {0}'s hand is: {1} {2}", playerNumber, Deck.CardToString(hand[0]), Deck.CardToString(hand[1])));
             }
         }
     }

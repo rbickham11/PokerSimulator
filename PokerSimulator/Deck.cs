@@ -75,16 +75,29 @@ namespace PokerSimulator
         
         public void DealSpecific(int card)
         {
-            if(card < 0 || card > 51)
+            try
+            {
+                ValidateCard(card);
+                deck.Remove(card);
+                dealtCards.Add(card);
+            }
+            catch(Exception)
+            {
+                throw;
+            }
+            
+        }
+
+        public void ValidateCard(int card)
+        {
+            if (card < 0 || card > 51)
             {
                 throw new ArgumentOutOfRangeException("Invalid card. Card must be in range 0-51");
             }
-            if(!deck.Contains(card))
+            if (!deck.Contains(card))
             {
                 throw new ArgumentException(String.Format("{0} was already dealt.", CardToString(card)));
             }
-            deck.Remove(card);
-            dealtCards.Add(card);
         }
 
         public static int CardFromString(string cardString)
