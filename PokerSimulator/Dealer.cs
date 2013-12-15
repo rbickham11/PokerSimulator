@@ -49,8 +49,8 @@ namespace PokerSimulator
                 }
                 if (deck.CardValid(cardStrings[0]) && deck.CardValid(cardStrings[1]))
                 {
-                    card1 = deck.CardFromString(cardStrings[0]);
-                    card2 = deck.CardFromString(cardStrings[1]);
+                    card1 = Deck.CardFromString(cardStrings[0]);
+                    card2 = Deck.CardFromString(cardStrings[1]);
                     if (deck.InDeck(card1) && deck.InDeck(card2))
                     {
                         deck.DealSpecific(card1, card2);

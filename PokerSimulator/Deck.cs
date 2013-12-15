@@ -6,10 +6,10 @@ namespace PokerSimulator
     class Deck
     {
         const int DeckSize = 52;
-        private readonly List<char> cardValues = new List<char>() { '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A' };
-        private readonly List<char> suitValues = new List<char>() { 'D', 'H', 'C', 'S' };
-        private readonly Random random = new Random();
-
+        private static readonly List<char> cardValues = new List<char>() { '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A' };
+        private static readonly List<char> suitValues = new List<char>() { 'D', 'H', 'C', 'S' };
+        
+        private Random random;
         private List<int> deck;
         private OutFile outFile;
 
@@ -21,6 +21,7 @@ namespace PokerSimulator
         public Deck(OutFile file)
         {
             deck = new List<int>();
+            random = new Random();
             outFile = file;
             GettingUserInput = true;
 
@@ -145,12 +146,12 @@ namespace PokerSimulator
             return true;
         }
 
-        public int CardFromString(string card)
+        public static int CardFromString(string card)
         {
             return 13 * suitValues.IndexOf(card[1]) + cardValues.IndexOf(card[0]);
         }
 
-        public string CardToString(int card)
+        public static string CardToString(int card)
         {
             return String.Format("{0}{1} ", cardValues[card % 13], suitValues[card / 13]);
         }
