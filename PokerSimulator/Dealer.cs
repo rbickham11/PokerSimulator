@@ -68,7 +68,7 @@ namespace PokerSimulator
                 }
                 catch(Exception ex)
                 {
-                    Console.WriteLine("{0}\n{1}", ex.Message, ex.StackTrace);
+                    Console.WriteLine(ex.Message);
                 }
             }
 

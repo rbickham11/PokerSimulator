@@ -89,15 +89,11 @@ namespace PokerSimulator
 
         public static int CardFromString(string cardString)
         {
-            try 
+            if (!cardValues.Contains(cardString[0]) || !suitValues.Contains(cardString[1]))
             {
-                return 13 * suitValues.IndexOf(cardString[1]) + cardValues.IndexOf(cardString[0]);
+                throw new ArgumentException(String.Format("{0} is not a valid card.", cardString));
             }
-            catch(ArgumentException)
-            {
-                throw new ArgumentException(String.Format("{0} does not match a valid card.", cardString));
-            }
-            
+            return 13 * suitValues.IndexOf(cardString[1]) + cardValues.IndexOf(cardString[0]);
         }
 
         public static string CardToString(int card)
