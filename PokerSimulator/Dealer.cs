@@ -11,27 +11,33 @@ namespace PokerSimulator
         private WinnerChecker winnerChecker;
         private int randomHands;
         private OutFile outFile;
+        private int handsDealt;
+        private List<int> dealtHands;
+        private List<int> board;
 
         public Dealer()
         {
             outFile = new OutFile();
             deck = new Deck(outFile);
+            dealtHands = new List<int>();
         }
        
         public void GetUserInput()
         {
             string inString;
             string[] cardStrings = new string[2];
-            int card1, card2, numHands;
+            int card;
+            int numHands;
             bool randomChange = false;
+            handsDealt = 0;
 
             Console.WriteLine("Enter up to {0} specific hands to be dealt, separating the cards by a space (Ex. \"AS KD\"). Press Enter without typing anything when finished.\n", MAX_HANDS);
 
             deck.Shuffle();
 
-            while (deck.HandsDealt <= MAX_HANDS)
+            while (handsDealt <= MAX_HANDS)
             {
-                Console.Write("Hand {0}: ", (deck.HandsDealt + 1));
+                Console.Write("Hand {0}: ", (handsDealt + 1));
                 inString = Console.ReadLine();
                 if (inString == string.Empty)
                     break;
@@ -47,61 +53,76 @@ namespace PokerSimulator
                     Console.WriteLine("Invalid Hand");
                     continue;
                 }
-                if (deck.CardValid(cardStrings[0]) && deck.CardValid(cardStrings[1]))
+                try
+                {   
+                    card = Deck.CardFromString(cardStrings[0]);
+                    deck.DealSpecific(card);
+                    dealtHands.Add(card);
+                    
+                    card = Deck.CardFromString(cardStrings[1]);
+                    deck.DealSpecific(card);
+                    dealtHands.Add(card);
+
+                    handsDealt++;
+                    PrintPlayerHand(true, handsDealt, dealtHands.GetRange(dealtHands.Count - 2, 2));
+                }
+                catch(Exception ex)
                 {
-                    card1 = Deck.CardFromString(cardStrings[0]);
-                    card2 = Deck.CardFromString(cardStrings[1]);
-                    if (deck.InDeck(card1) && deck.InDeck(card2))
-                    {
-                        deck.DealSpecific(card1, card2);
-                    }
+                    Console.WriteLine("{0}\n{1}", ex.Message, ex.StackTrace);
                 }
             }
 
-            while (true)
+            if (dealtHands.Count / 2 < MAX_HANDS)
             {
-                Console.WriteLine("Additional random hands: ");
-                inString = Console.ReadLine();
-                if (int.TryParse(inString, out randomHands))
+                while (true)
                 {
-                    if (randomHands + deck.HandsDealt == 0)
+                    Console.Write("Additional random hands: ");
+                    inString = Console.ReadLine();
+                    if (int.TryParse(inString, out randomHands))
                     {
-                        Console.WriteLine("There must be at least one hand, try again.");
-                        continue;
+                        if (randomHands + handsDealt == 0)
+                        {
+                            Console.WriteLine("There must be at least one hand, try again.");
+                            continue;
+                        }
+                        if (randomHands + handsDealt <= MAX_HANDS)
+                        {
+                            dealtHands.AddRange(deck.DealCards(randomHands * 2));
+                            for (int j = handsDealt * 2; j < dealtHands.Count; j += 2)
+                            {
+                                PrintPlayerHand(true, j / 2 + 1, dealtHands.GetRange(j, 2));
+                            }
+                            handsDealt += randomHands;
+                        }
+                        else
+                        {
+                            Console.WriteLine("Hand limit of {0} exceeded, try again.", MAX_HANDS);
+                            continue;
+                        }
                     }
-                    if (randomHands + deck.HandsDealt <= MAX_HANDS)
-                        deck.DealRandom(randomHands);
                     else
                     {
-                        Console.WriteLine("Hand limit of {0} exceeded, try again.", MAX_HANDS);
+                        Console.WriteLine("Please enter a valid number");
                         continue;
                     }
+                    break;
                 }
-                else
-                {
-                    Console.WriteLine("Please enter a valid number");
-                    continue;
-                }
-                break;
             }
-
             if (randomHands > 0)
             {
                 Console.WriteLine("Do you want different random hands dealt each time?");
                 Console.Write("(Choose no for the same {0} hands each time)", randomHands);
 
-                while (inString != "Y" && inString != "N")
+                do
                 {
                     Console.WriteLine();
                     Console.Write("Y/N: ");
                     inString = Console.ReadLine().Trim().ToUpper();
-                }
+                } while (inString != "Y" && inString != "N") ;
                 if (inString == "Y")
                     randomChange = true;
             }
-            
-            deck.GettingUserInput = false;
-            
+                        
             while (true)
             {
                 Console.Write("Number of hands to simulate: ");
@@ -118,45 +139,52 @@ namespace PokerSimulator
 
         public void RunHands(int numHands, bool randomChange)
         {
-            winnerChecker = new WinnerChecker(outFile, deck.HandsDealt);
+            winnerChecker = new WinnerChecker(outFile, handsDealt);
 
             var stopWatch = new Stopwatch();
             stopWatch.Restart();
             List<int> specHands = new List<int>();
-            int i;
+            int i, j;
 
-            if (randomChange)
+            if(randomChange)
             {
-                for (i = 0; i < (deck.HandsDealt - randomHands) * 2; i++)
-                    specHands.Add(deck.DealtHandList[i]);
-
-                for (i = 0; i < numHands; i++)
-                {
-                    outFile.AddLine("---------------------------------------------------------------");
-                    deck.CollectCards();
-                    deck.Shuffle();
-                    for (int j = 0; j < specHands.Count; j += 2)
-                        deck.DealSpecific(specHands[j], specHands[j + 1]);
-                    deck.DealRandom(randomHands);
-                    deck.DealBoard();
-                    winnerChecker.FindWinner(deck.DealtHandList, deck.Board);
-                }
+                for (i = 0; i < (handsDealt - randomHands) * 2; i++)
+                    specHands.Add(dealtHands[i]);
             }
-            else
-            {
-                foreach (int k in deck.DealtHandList)
-                    specHands.Add(k);
 
-                for (i = 0; i < numHands; i++)
+            for (i = 0; i < numHands; i++)
+            {
+                outFile.AddLine("---------------------------------------------------------------");
+                deck.CollectCards();
+                deck.Shuffle();
+                board = new List<int>();
+
+                if (randomChange)
                 {
-                    outFile.AddLine("---------------------------------------------------------------");
-                    deck.CollectCards();
-                    deck.Shuffle();
-                    for (int j = 0; j < specHands.Count; j += 2)
-                        deck.DealSpecific(specHands[j], specHands[j + 1]);
-                    deck.DealBoard();
-                    winnerChecker.FindWinner(deck.DealtHandList, deck.Board);
+                    dealtHands = new List<int>();
+                    for (j = 0; j < specHands.Count; j++)
+                    {
+                        deck.DealSpecific(specHands[j]);
+                        dealtHands.Add(specHands[j]);
+                    }
+                    dealtHands.AddRange(deck.DealCards(randomHands * 2));
                 }
+
+                for (j = 0; j < dealtHands.Count; j += 2)
+                {
+                    PrintPlayerHand(false, j / 2 + 1, dealtHands.GetRange(j, 2));
+                }
+                DealFlop();
+                DealCardToBoard();
+                DealCardToBoard();
+                
+                outFile.AddLine();
+                outFile.AppendLine("Board: ");
+                foreach (int card in board)
+                {
+                    outFile.AppendLine(Deck.CardToString(card));
+                }
+                winnerChecker.FindWinner(dealtHands, board);
             }
 
             for (i = 1; i < winnerChecker.winCounts.Count; i++)
@@ -173,5 +201,30 @@ namespace PokerSimulator
             Console.WriteLine("({0}ms)", stopWatch.ElapsedMilliseconds);
             Process.Start(filePath);
         }
+
+        public void DealFlop()
+        {
+            deck.DealCard(); //Burn
+            board.AddRange(deck.DealCards(3));
+        }
+
+        public void DealCardToBoard()
+        {
+            deck.DealCard(); //Burn
+            board.Add(deck.DealCard());
+        }
+
+        public void PrintPlayerHand(bool console, int playerNumber, List<int> hand)
+        {
+            if (console)
+            {
+                Console.WriteLine("Player {0}'s hand is: {1}{2}", playerNumber, Deck.CardToString(hand[0]), Deck.CardToString(hand[1]));
+            }
+            else
+            {
+                outFile.AddLine(String.Format("Player {0}'s hand is: {1}{2}", playerNumber, Deck.CardToString(hand[0]), Deck.CardToString(hand[1])));
+            }
+        }
     }
 }
+

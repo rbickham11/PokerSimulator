@@ -12,25 +12,17 @@ namespace PokerSimulator
         private Random random;
         private List<int> deck;
         private OutFile outFile;
-
-        public List<int> DealtHandList { get; private set; }
-        public List<int> Board { get; private set; }
-        public int HandsDealt { get; private set; }
-        public bool GettingUserInput { get; set; }
+        private List<int> dealtCards;
 
         public Deck(OutFile file)
         {
             deck = new List<int>();
             random = new Random();
             outFile = file;
-            GettingUserInput = true;
 
-            DealtHandList = new List<int>();
-            Board = new List<int>();
+            dealtCards = new List<int>();
             for (int i = 0; i < DeckSize; i++)
                 deck.Add(i);
-
-            HandsDealt = 0;
         }
 
         public void Print()
@@ -53,102 +45,59 @@ namespace PokerSimulator
 
         public void CollectCards()
         {
-            deck = new List<int>();
-            Board = new List<int>();
-            for (int i = 0; i < DeckSize; i++)
-                deck.Add(i);
-
-            HandsDealt = 0;
-            DealtHandList = new List<int>();
+            foreach(int card in dealtCards)
+            {
+                deck.Add(card);
+            }
+            dealtCards = new List<int>();
         }
 
-        public void DealRandom(int numHands)
+        public int DealCard()
         {
-            int card1, card2;
-            for (int i = 0; i < numHands; i++)
+            int card = deck[0];
+            dealtCards.Add(card);
+            deck.Remove(card);
+            return card;
+        }
+
+        public List<int> DealCards(int numCards)
+        {
+            var cards = new List<int>();
+           
+            for(int i = 0; i < numCards; i++)
             {
-                HandsDealt++;
-                card1 = deck[0];
+                cards.Add(deck[0]);
+                dealtCards.Add(deck[0]);
                 deck.RemoveAt(0);
-                DealtHandList.Add(card1);             
-                card2 = deck[0];
-                deck.RemoveAt(0);
-                DealtHandList.Add(card2);
-
-                if (GettingUserInput)
-                    Console.WriteLine("Player {0}'s hand is: {1}{2}", HandsDealt, CardToString(card1), CardToString(card2));
-                else
-                    outFile.AddLine(String.Format("Player {0}'s hand is: {1}{2}", HandsDealt, CardToString(card1), CardToString(card2)));
             }
+            return cards; 
         }
-
-        public void DealSpecific(int card1, int card2)
+        
+        public void DealSpecific(int card)
         {
-            HandsDealt++;
-            deck.Remove(card1);
-            deck.Remove(card2);
-            DealtHandList.Add(card1);
-            DealtHandList.Add(card2);
-
-            if (GettingUserInput)
-                Console.WriteLine("Player {0}'s hand is: {1}{2}", HandsDealt, CardToString(card1), CardToString(card2));
-            else
-                outFile.AddLine(String.Format("Player {0}'s hand is: {1}{2}", HandsDealt, CardToString(card1), CardToString(card2)));
-        }
-
-        public void DealBoard()
-        {
-            int card;
-
-            outFile.AppendLine("Board: ");
-            for (int i = 0; i < 8; i++)
+            if(card < 0 || card > 51)
             {
-                if (i == 0 || i == 4 || i == 6) //Burn Cards
-                    deck.RemoveAt(0);
-                else
-                {
-                    card = deck[0];
-                    deck.RemoveAt(0);
-                    Board.Add(card);
-                    outFile.AppendLine(CardToString(card));
-                }
+                throw new ArgumentOutOfRangeException("Invalid card. Card must be in range 0-51");
             }
-            outFile.AddLine();
-        }
-
-        public bool CardValid(string card)
-        {
-            bool cardValid = true;
-
-            if (!cardValues.Contains(card[0]))
-                cardValid = false;
-            else if (!suitValues.Contains(card[1]))
-                cardValid = false;
-
-            if (!cardValid)
+            if(!deck.Contains(card))
             {
-                Console.WriteLine("{0} is invalid", card);
-                return false;
+                throw new ArgumentException(String.Format("Card {0} ({1}) was already dealt.", card, CardToString(card)));
             }
-
-            return true;
+            deck.Remove(card);
+            dealtCards.Add(card);
         }
 
-        public bool InDeck(int card)
+        public static int CardFromString(string cardString)
         {
-            if (!deck.Contains(card))
+            try 
             {
-                Console.Write(CardToString(card));
-                Console.WriteLine("was already dealt");
-                return false;
+                return 13 * suitValues.IndexOf(cardString[1]) + cardValues.IndexOf(cardString[0]);
             }
-
-            return true;
-        }
-
-        public static int CardFromString(string card)
-        {
-            return 13 * suitValues.IndexOf(card[1]) + cardValues.IndexOf(card[0]);
+            catch(ArgumentException)
+            {
+                throw new ArgumentException(String.Format("{0} does not match a valid card.", cardString));
+            }
+            
         }
 
         public static string CardToString(int card)
