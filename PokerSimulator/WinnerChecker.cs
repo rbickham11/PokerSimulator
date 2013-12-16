@@ -339,6 +339,15 @@ namespace PokerSimulator
                         break;
                     case 4: //Straight
                         sevenCardHand = sevenCardHand.Distinct().ToList();
+                        if (sevenCardHand[sevenCardHand.Count - 1] == 12 && sevenCardHand[0] == 0 && sevenCardHand[1] == 1 && sevenCardHand[2] == 2 && sevenCardHand[3] == 3)  //A-2-3-4-5
+                        {
+                            for (k = 3; k >= 0; k--)
+                            {
+                                fiveCardHands.Add(k);
+                            }
+                            fiveCardHands.Add(12);
+                            break;
+                        }
                         for (j = sevenCardHand.Count - 1; j >= 4; j--)
                         {
                             if (sevenCardHand[j] == sevenCardHand[j - 4] + 4)
@@ -348,6 +357,7 @@ namespace PokerSimulator
                                 break;
                             }
                         }
+
                         break;
                     case 5: //Flush
                         for (j = sevenCardHand.Count - 1; j >= 4; j--)

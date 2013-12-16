@@ -149,7 +149,7 @@ namespace PokerSimulator
             List<int> specHands = new List<int>();
             int i, j;
 
-            if(randomChange)
+            if (randomChange)
             {
                 for (i = 0; i < (handsDealt - randomHands) * 2; i++)
                     specHands.Add(dealtHands[i]);
@@ -171,6 +171,13 @@ namespace PokerSimulator
                         dealtHands.Add(specHands[j]);
                     }
                     dealtHands.AddRange(deck.DealCards(randomHands * 2));
+                }
+                else
+                {
+                    for(j = 0; j < dealtHands.Count; j++)
+                    {
+                        deck.DealSpecific(dealtHands[j]);
+                    }
                 }
 
                 for (j = 0; j < dealtHands.Count; j += 2)
