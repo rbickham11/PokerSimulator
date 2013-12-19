@@ -11,14 +11,12 @@ namespace PokerSimulator
         
         private Random random;
         private List<int> deck;
-        private OutFile outFile;
         private List<int> dealtCards;
 
-        public Deck(OutFile file)
+        public Deck()
         {
             deck = new List<int>();
             random = new Random();
-            outFile = file;
 
             dealtCards = new List<int>();
             for (int i = 0; i < DeckSize; i++)
@@ -72,20 +70,26 @@ namespace PokerSimulator
             }
             return cards; 
         }
-        
-        public void DealSpecific(int card)
+
+        public void DealSpecific(List<int> cards)
         {
             try
             {
-                ValidateCard(card);
-                deck.Remove(card);
-                dealtCards.Add(card);
+                foreach(int card in cards)
+                {
+                    ValidateCard(card);
+                }
             }
             catch(Exception)
             {
                 throw;
             }
             
+            foreach (int card in cards)
+            {
+                deck.Remove(card);
+                dealtCards.Add(card);
+            }
         }
 
         public void ValidateCard(int card)

@@ -3,11 +3,11 @@ using System.IO;
 
 namespace PokerSimulator
 {
-    class OutFile
+    class SimulationOutput
     {
         private List<string> lines;
 
-        public OutFile()
+        public SimulationOutput()
         {
             lines = new List<string>();
             lines.Add("");

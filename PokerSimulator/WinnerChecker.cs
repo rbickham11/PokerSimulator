@@ -9,7 +9,7 @@ namespace PokerSimulator
     {
         private static readonly List<string> Ranks = new List<string>() { "High Card", "Pair", "Two Pair", "Three of a Kind", "Straight", "Flush", "Full House", "Four of a Kind", "Straight Flush" };
 
-        private OutFile outFile;
+        private SimulationOutput simOutput;
         private List<int> hands;
         private List<int> board;     
         private List<int> thisHand;
@@ -18,9 +18,9 @@ namespace PokerSimulator
 
         public List<int> winCounts { get; private set; }
 
-        public WinnerChecker(OutFile file, int handsDealt)
+        public WinnerChecker(SimulationOutput file, int handsDealt)
         {
-            outFile = file;
+            simOutput = file;
             thisHand = new List<int>() { -1, -1, -1, -1, -1, -1, -1 };
             winCounts = new List<int>();
             for (int i = 0; i < handsDealt + 1; i++)
@@ -111,13 +111,13 @@ namespace PokerSimulator
 
             if (winningRank == 0 || winningRank == 2 || winningRank == 3 || winningRank == 7)
                 a = string.Empty;
-            outFile.AddLine();
-            outFile.AddLine();
+            simOutput.AddLine();
+            simOutput.AddLine();
             if (winningPlayer == 0)
-                outFile.AddLine(String.Format("Chop ({0})", Ranks[winningRank]));
+                simOutput.AddLine(String.Format("Chop ({0})", Ranks[winningRank]));
             else
             {
-                outFile.AddLine(String.Format("The winner is Player {0} with {1}{2}", winningPlayer, a, Ranks[winningRank]));
+                simOutput.AddLine(String.Format("The winner is Player {0} with {1}{2}", winningPlayer, a, Ranks[winningRank]));
             }
             winCounts[winningPlayer]++;
         }

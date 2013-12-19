@@ -56,10 +56,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Dealer.cs" />
+    <Compile Include="Simulation.cs" />
     <Compile Include="Deck.cs" />
-    <Compile Include="OutFile.cs" />
-    <Compile Include="PokerSimulatorMain.cs" />
+    <Compile Include="SimulationOutput.cs" />
+    <Compile Include="ConsoleMain.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WinnerChecker.cs" />
   </ItemGroup>
