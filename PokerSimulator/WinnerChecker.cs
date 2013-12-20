@@ -16,15 +16,15 @@ namespace PokerSimulator
         private List<int> handValues;
         private BitArray dontCheck;
 
-        public List<int> winCounts { get; private set; }
+        public List<int> WinCounts { get; private set; }
 
         public WinnerChecker(SimulationOutput file, int handsDealt)
         {
             simOutput = file;
             thisHand = new List<int>() { -1, -1, -1, -1, -1, -1, -1 };
-            winCounts = new List<int>();
+            WinCounts = new List<int>();
             for (int i = 0; i < handsDealt + 1; i++)
-                winCounts.Add(0);
+                WinCounts.Add(0);
         }
 
         public void FindWinner(List<int> inHands, List<int> inBoard)
@@ -119,7 +119,7 @@ namespace PokerSimulator
             {
                 simOutput.AddLine(String.Format("The winner is Player {0} with {1}{2}", winningPlayer, a, Ranks[winningRank]));
             }
-            winCounts[winningPlayer]++;
+            WinCounts[winningPlayer]++;
         }
 
         public void eliminateHands()

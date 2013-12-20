@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 
 namespace PokerSimulator
 {
@@ -11,6 +10,7 @@ namespace PokerSimulator
         private WinnerChecker winnerChecker;
         private SimulationOutput output;
         private int randomHands;
+        private int numHands;
         
         public List<int> DealtHands { get; private set; }
         private List<int> board;
@@ -46,12 +46,15 @@ namespace PokerSimulator
             randomHands += numHands;
         }
 
-        public void Run(int numHands, bool randomChange)
+        public void Run(int hands, bool randomChange)
         {
+            numHands = hands;
             winnerChecker = new WinnerChecker(output, DealtHands.Count / 2);
+            if(!randomChange)
+            {
+                randomHands = 0;
+            }
 
-            var stopWatch = new Stopwatch();
-            stopWatch.Restart();
             List<int> specHands = new List<int>();
             int i, j;
 
@@ -61,9 +64,12 @@ namespace PokerSimulator
                     specHands.Add(DealtHands[i]);
             }
 
+            output.AddLine("---------------------------------------------------------------");
+            output.AddLine("Simulated Hands:");
             for (i = 0; i < numHands; i++)
             {
                 output.AddLine("---------------------------------------------------------------");
+                output.AddLine(string.Format("{0}.", i + 1));
                 deck.CollectCards();
                 deck.Shuffle();
                 board = new List<int>();
@@ -96,20 +102,7 @@ namespace PokerSimulator
                 }
                 winnerChecker.FindWinner(DealtHands, board);
             }
-
-            for (i = 1; i < winnerChecker.winCounts.Count; i++)
-                Console.WriteLine("Player {0} wins: {1} ({2:P})", i, winnerChecker.winCounts[i], (double)winnerChecker.winCounts[i] / numHands);
-            Console.WriteLine("Chopped Pots: {0} ({1:P})", winnerChecker.winCounts[0], (double)winnerChecker.winCounts[0] / numHands);
-            
-            output.AddTopLine(String.Format("Chopped Pots: {0} ({1:P})", winnerChecker.winCounts[0], (double)winnerChecker.winCounts[0] / numHands));
-            for (i = winnerChecker.winCounts.Count - 1; i > 0; i--)
-                output.AddTopLine(String.Format("Player {0} wins: {1} ({2:P})", i, winnerChecker.winCounts[i], (double) winnerChecker.winCounts[i] / numHands));
-
-            string filePath = @"SimulationResults.txt";
-            output.WriteLinesToFile(filePath);
-            stopWatch.Stop();
-            Console.WriteLine("({0}ms)", stopWatch.ElapsedMilliseconds);
-            Process.Start(filePath);
+            PrintResults(false);
         }
 
         public void DealFlop()
@@ -134,6 +127,53 @@ namespace PokerSimulator
             {
                 output.AddLine(String.Format("Player {0}'s hand is: {1} {2}", playerNumber, Deck.CardToString(hand[0]), Deck.CardToString(hand[1])));
             }
+        }
+
+        public void PrintResults(bool console)
+        {
+            string hand;
+
+            if (console)
+            {
+                for (int i = 1; i < winnerChecker.WinCounts.Count; i++)
+                {
+                    if(i <= DealtHands.Count / 2 - randomHands)
+                    {
+                        hand = string.Format("{0} {1}", Deck.CardToString(DealtHands[i * 2 - 2]), Deck.CardToString(DealtHands[i * 2 - 1]));
+                    }
+                    else
+                    {
+                        hand = "random";
+                    }
+                    Console.WriteLine("Player {0} ({1}) wins: {2} ({3:P})", i, hand, winnerChecker.WinCounts[i], (double)winnerChecker.WinCounts[i] / numHands);
+                }
+                Console.WriteLine("Chopped Pots: {0} ({1:P})", winnerChecker.WinCounts[0], (double)winnerChecker.WinCounts[0] / numHands);
+            }
+            else
+            {
+                output.AddTopLine();
+                output.AddTopLine(String.Format("Chopped Pots: {0} ({1:P})", winnerChecker.WinCounts[0], (double)winnerChecker.WinCounts[0] / numHands));
+                for (int i = winnerChecker.WinCounts.Count - 1; i > 0; i--)
+                {
+                    if (i <= DealtHands.Count / 2 - randomHands)
+                    {
+                        hand = string.Format("{0} {1}", Deck.CardToString(DealtHands[i * 2 - 2]), Deck.CardToString(DealtHands[i * 2 - 1]));
+                    }
+                    else
+                    {
+                        hand = "random";
+                    }
+                    output.AddTopLine(String.Format("Player {0} ({1}) wins: {2} ({3:P})", i, hand, winnerChecker.WinCounts[i], (double)winnerChecker.WinCounts[i] / numHands));
+                }
+                output.AddTopLine("---------------------------------------------------------------");
+                output.AddTopLine("Simulation Results:");
+                output.AddTopLine("---------------------------------------------------------------");
+            }
+        }
+
+        public void PrintOutputToFile(string filePath)
+        {
+            output.WriteLinesToFile(filePath);
         }
     }
 }

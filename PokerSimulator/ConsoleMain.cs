@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace PokerSimulator
 {
@@ -24,6 +25,7 @@ namespace PokerSimulator
             List<int> inHand = new List<int>();
 
             var simulation = new Simulation();
+            var stopWatch = new Stopwatch();
 
             Console.WriteLine("Enter up to {0} specific hands to be dealt, separating the cards by a space (Ex. \"AS KD\"). Press Enter without typing anything when finished.\n", Simulation.MAX_HANDS);
 
@@ -118,12 +120,20 @@ namespace PokerSimulator
                 inString = Console.ReadLine();
                 if (int.TryParse(inString, out numHands))
                 {
+                    stopWatch.Restart();
                     simulation.Run(numHands, randomChange);
                     break;
                 }
                 else
                     Console.WriteLine("Please enter a valid number");
             }
+            simulation.PrintResults(true);
+            stopWatch.Stop();
+            Console.WriteLine("({0}ms)", stopWatch.ElapsedMilliseconds);
+            
+            string filePath = @"SimulationResults.txt";
+            simulation.PrintOutputToFile(filePath);
+            Process.Start(filePath);
         }
     }
 }
