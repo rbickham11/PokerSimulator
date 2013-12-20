@@ -92,6 +92,20 @@ namespace PokerSimulator
             }
         }
 
+        public void DealSpecific(int card)
+        {
+            try
+            {
+                ValidateCard(card);
+            }
+            catch(Exception)
+            {
+                throw;
+            }
+            deck.Remove(card);
+            dealtCards.Add(card);
+        }
+
         public void ValidateCard(int card)
         {
             if (card < 0 || card > 51)

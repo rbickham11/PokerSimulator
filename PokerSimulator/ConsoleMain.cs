@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -17,12 +18,13 @@ namespace PokerSimulator
         public void GetUserInput()
         {
             string inString;
-            string[] cardStrings = new string[2];
+            string[] handString = new string[2];
+            List<string> boardStrings;
             int numHands;
             bool randomChange = false;
             int handsDealt = 0;
             int randomHands = 0;
-            List<int> inHand = new List<int>();
+            List<int> cards = new List<int>();
 
             var simulation = new Simulation();
             var stopWatch = new Stopwatch();
@@ -31,7 +33,7 @@ namespace PokerSimulator
 
             while (handsDealt <= Simulation.MAX_HANDS)
             {
-                inHand.Clear();
+                cards.Clear();
                 Console.Write("Hand {0}: ", (handsDealt + 1));
                 inString = Console.ReadLine();
                 if (inString == string.Empty)
@@ -41,9 +43,9 @@ namespace PokerSimulator
                     Console.WriteLine("Invalid hand");
                     continue;
                 }
-                cardStrings = inString.Split(' ');
+                handString = inString.Split(' ');
 
-                if (cardStrings[0] == cardStrings[1])
+                if (handString[0] == handString[1])
                 {
                     Console.WriteLine("Invalid Hand");
                     continue;
@@ -51,11 +53,11 @@ namespace PokerSimulator
 
                 try
                 {
-                    inHand.Add(Deck.CardFromString(cardStrings[0]));
-                    inHand.Add(Deck.CardFromString(cardStrings[1]));
-                    simulation.AddHand(inHand);
+                    cards.Add(Deck.CardFromString(handString[0]));
+                    cards.Add(Deck.CardFromString(handString[1]));
+                    simulation.AddHand(cards);
                     handsDealt++;
-                    simulation.PrintPlayerHand(true, handsDealt, inHand);
+                    simulation.PrintPlayerHand(true, handsDealt, cards);
                 }
                 catch (Exception ex)
                 {
@@ -114,6 +116,41 @@ namespace PokerSimulator
                     randomChange = true;
             }
 
+            while(true)
+            {
+                Console.Write("Enter up to 4 specific cards to be dealt to the board each hand: ");
+                inString = Console.ReadLine();
+                if(inString == string.Empty)
+                {
+                    break;
+                }
+                boardStrings = new List<string>(inString.Split(' '));
+                if(boardStrings.Distinct().Count() != boardStrings.Count)
+                {
+                    Console.WriteLine("All cards must be distinct");
+                    continue;
+                }
+                try
+                {
+                    cards.Clear();
+                    foreach (string cardString in boardStrings)
+                    {
+                        cards.Add(Deck.CardFromString(cardString));
+                    }
+                    simulation.AddCardsToBoard(cards);
+                    Console.Write("Set board cards: ");
+                    foreach(int card in cards)
+                    {
+                        Console.Write(Deck.CardToString(card) + " ");
+                    }
+                    Console.WriteLine();
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+            }
             while (true)
             {
                 Console.Write("Number of hands to simulate: ");
