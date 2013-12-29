@@ -7,7 +7,7 @@ namespace PokerSimulator
 {
     class WinnerChecker
     {
-        private static readonly List<string> Ranks = new List<string>() { "High Card", "Pair", "Two Pair", "Three of a Kind", "Straight", "Flush", "Full House", "Four of a Kind", "Straight Flush" };
+        public static readonly List<string> Ranks = new List<string>() { "High Card", "Pair", "Two Pair", "Three of a Kind", "Straight", "Flush", "Full House", "Four of a Kind", "Straight Flush" };
 
         private SimulationOutput simOutput;
         private List<int> hands;
@@ -16,15 +16,13 @@ namespace PokerSimulator
         private List<int> handValues;
         private BitArray dontCheck;
 
-        public List<int> WinCounts { get; private set; }
+        public int WinningPlayer { get; private set; }
+        public int WinningRank { get; private set; }
 
         public WinnerChecker(SimulationOutput file, int handsDealt)
         {
             simOutput = file;
             thisHand = new List<int>() { -1, -1, -1, -1, -1, -1, -1 };
-            WinCounts = new List<int>();
-            for (int i = 0; i < handsDealt + 1; i++)
-                WinCounts.Add(0);
         }
 
         public void FindWinner(List<int> inHands, List<int> inBoard)
@@ -33,9 +31,7 @@ namespace PokerSimulator
             board = inBoard;
 
             int i, j, k;
-            int winningPlayer = 0;
             bool handFound = false;
-            string a = "a ";
             List<int> rankWinners = new List<int>();
             List<int> fiveCardHands;
 
@@ -66,13 +62,13 @@ namespace PokerSimulator
                     }
                 }
             }
-            int winningRank = i + 1;
+            WinningRank = i + 1;
 
             if (rankWinners.Count == 2)  //If there's only one hand with the winning rank
-                winningPlayer = hands.IndexOf(rankWinners[0]) / 2 + 1;
+                WinningPlayer = hands.IndexOf(rankWinners[0]) / 2 + 1;
             else
             {
-                fiveCardHands = getFiveCardHands(rankWinners, winningRank);
+                fiveCardHands = getFiveCardHands(rankWinners, WinningRank);
                 var possibleWinner = new BitArray(fiveCardHands.Count / 5, true);
                 int possibleCount = possibleWinner.Count;
                 for (i = 4; i >= 0; i--)
@@ -99,27 +95,15 @@ namespace PokerSimulator
                     }
                 }
                 if (possibleCount > 1)
-                    winningPlayer = 0;
+                    WinningPlayer = 0;
                 else
                 {
                     for (i = 0; i < possibleWinner.Count; i++)
                         if (possibleWinner[i] == true)
                             break;
-                    winningPlayer = hands.IndexOf(rankWinners[i * 2]) / 2 + 1;
+                    WinningPlayer = hands.IndexOf(rankWinners[i * 2]) / 2 + 1;
                 }
             }
-
-            if (winningRank == 0 || winningRank == 2 || winningRank == 3 || winningRank == 7)
-                a = string.Empty;
-            simOutput.AddLine();
-            simOutput.AddLine();
-            if (winningPlayer == 0)
-                simOutput.AddLine(String.Format("Chop ({0})", Ranks[winningRank]));
-            else
-            {
-                simOutput.AddLine(String.Format("The winner is Player {0} with {1}{2}", winningPlayer, a, Ranks[winningRank]));
-            }
-            WinCounts[winningPlayer]++;
         }
 
         public void eliminateHands()

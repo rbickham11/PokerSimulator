@@ -7,6 +7,8 @@ namespace PokerSimulator
 {
     class ConsoleMain
     {
+        private Simulation simulation = new Simulation();
+
         static void Main(string[] args)
         {
             var simConsole = new ConsoleMain();
@@ -26,7 +28,6 @@ namespace PokerSimulator
             int randomHands = 0;
             List<int> cards = new List<int>();
 
-            var simulation = new Simulation();
             var stopWatch = new Stopwatch();
 
             Console.WriteLine("Enter up to {0} specific hands to be dealt, separating the cards by a space (Ex. \"AS KD\"). Press Enter without typing anything when finished.\n", Simulation.MAX_HANDS);
@@ -164,13 +165,31 @@ namespace PokerSimulator
                 else
                     Console.WriteLine("Please enter a valid number");
             }
-            simulation.PrintResults(true);
+            PrintResults();
             stopWatch.Stop();
             Console.WriteLine("({0}ms)", stopWatch.ElapsedMilliseconds);
             
             string filePath = @"SimulationResults.txt";
             simulation.PrintOutputToFile(filePath);
             Process.Start(filePath);
+        }
+
+        public void PrintResults()
+        {
+            string hand;
+            for (int i = 1; i < simulation.PlayerWinCounts.Count; i++)
+            {
+                if (i <= simulation.DealtHands.Count / 2 - simulation.RandomHands)
+                {
+                    hand = string.Format("{0} {1}", Deck.CardToString(simulation.DealtHands[i * 2 - 2]), Deck.CardToString(simulation.DealtHands[i * 2 - 1]));
+                }
+                else
+                {
+                    hand = "random";
+                }
+                Console.WriteLine("Player {0} ({1}) wins: {2} ({3:P})", i, hand, simulation.PlayerWinCounts[i], (double)simulation.PlayerWinCounts[i] / simulation.NumHands);
+            }
+            Console.WriteLine("Chopped Pots: {0} ({1:P})", simulation.PlayerWinCounts[0], (double)simulation.PlayerWinCounts[0] / simulation.NumHands);
         }
     }
 }
