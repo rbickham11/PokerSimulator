@@ -1,4 +1,4 @@
 PokerSimulator
 ==============
 
-A console application for simulating poker hands
+A class library and console application for simulating poker hands. Web application currently under development.

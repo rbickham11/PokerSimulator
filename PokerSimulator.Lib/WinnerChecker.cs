@@ -3,9 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PokerSimulator
+namespace PokerSimulator.Lib
 {
-    class WinnerChecker
+    public class WinnerChecker
     {
         public static readonly List<string> Ranks = new List<string>() { "High Card", "Pair", "Two Pair", "Three of a Kind", "Straight", "Flush", "Full House", "Four of a Kind", "Straight Flush" };
 

@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 
-namespace PokerSimulator
+namespace PokerSimulator.Lib
 {
-    class SimulationOutput
+    public class SimulationOutput
     {
         private List<string> lines;
 

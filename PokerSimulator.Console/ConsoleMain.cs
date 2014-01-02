@@ -3,7 +3,9 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace PokerSimulator
+using PokerSimulator.Lib;
+
+namespace PokerSimulator.ConsoleApp
 {
     class ConsoleMain
     {

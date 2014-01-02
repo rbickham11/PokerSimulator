@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace PokerSimulator
+namespace PokerSimulator.Lib
 {
-    class Simulation
+    public class Simulation
     {
         public const int MAX_HANDS = 10;
 

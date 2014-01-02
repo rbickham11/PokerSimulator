@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace PokerSimulator
+namespace PokerSimulator.Lib
 {
-    class Deck
+    public class Deck
     {
         const int DeckSize = 52;
         private static readonly List<char> cardValues = new List<char>() { '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A' };
