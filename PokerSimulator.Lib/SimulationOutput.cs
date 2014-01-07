@@ -36,6 +36,11 @@ namespace PokerSimulator.Lib
             lines.Insert(0, "");
         }
 
+        public void AppendToTop(List<string> topLines)
+        {
+            lines.InsertRange(0, topLines);
+        }
+
         public void AppendLine(string outString)
         {
             lines[lines.Count - 1] = lines[lines.Count - 1] + outString;

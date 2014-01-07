@@ -155,10 +155,10 @@ namespace PokerSimulator.Lib
                 output.AddLine();
                 output.AddLine();
                 if (winnerChecker.WinningPlayer == 0)
-                    output.AddLine(String.Format("Chop ({0})", WinnerChecker.Ranks[winnerChecker.WinningRank]));
+                    output.AddLine(string.Format("Chop ({0})", WinnerChecker.Ranks[winnerChecker.WinningRank]));
                 else
                 {
-                    output.AddLine(String.Format("The winner is Player {0} with {1}{2}", winnerChecker.WinningPlayer, a, WinnerChecker.Ranks[winnerChecker.WinningRank]));
+                    output.AddLine(string.Format("The winner is Player {0} with {1}{2}", winnerChecker.WinningPlayer, a, WinnerChecker.Ranks[winnerChecker.WinningRank]));
                 }
                 
                 PlayerWinCounts[winnerChecker.WinningPlayer]++;
@@ -207,22 +207,26 @@ namespace PokerSimulator.Lib
             }
             else
             {
-                output.AddLine(String.Format("Player {0}'s hand is: {1} {2}", playerNumber, Deck.CardToString(hand[0]), Deck.CardToString(hand[1])));
+                output.AddLine(string.Format("Player {0}'s hand is: {1} {2}", playerNumber, Deck.CardToString(hand[0]), Deck.CardToString(hand[1])));
             }
         }
 
         public void PrintResults()
         {
             string hand;
-            output.AddTopLine();
-            output.AppendTopLine(String.Format("Set Board: "));
-            foreach(int card in SetBoard)
+            List<string> results = new List<string>();
+
+            results.Add("---------------------------------------------------------------");
+            results.Add("Simulation Results:");
+            results.Add("---------------------------------------------------------------");
+
+            results.Add(string.Format("Set Board: "));
+            foreach (int card in SetBoard)
             {
-                output.AppendTopLine(Deck.CardToString(card) + " ");
+                results[results.Count - 1] += Deck.CardToString(card);
             }
-            output.AddTopLine();
-            output.AddTopLine(String.Format("Chopped Pots: {0} ({1:P})", PlayerWinCounts[0], (double)PlayerWinCounts[0] / NumHands));
-            for (int i = PlayerWinCounts.Count - 1; i > 0; i--)
+
+            for (int i = 1; i < PlayerWinCounts.Count; i++)
             {
                 if (i <= DealtHands.Count / 2 - RandomHands)
                 {
@@ -232,11 +236,17 @@ namespace PokerSimulator.Lib
                 {
                     hand = "random";
                 }
-                output.AddTopLine(String.Format("Player {0} ({1}) wins: {2} ({3:P})", i, hand, PlayerWinCounts[i], (double)PlayerWinCounts[i] / NumHands));
+                results.Add(string.Format("Player {0} ({1}) wins: {2} ({3:P})", i, hand, PlayerWinCounts[i], (double)PlayerWinCounts[i] / NumHands));
             }
-            output.AddTopLine("---------------------------------------------------------------");
-            output.AddTopLine("Simulation Results:");
-            output.AddTopLine("---------------------------------------------------------------");
+            results.Add(string.Format("Chopped Pots: {0} ({1:P})", PlayerWinCounts[0], (double)PlayerWinCounts[0] / NumHands));
+
+            results.Add("");
+            results.Add("Winning Rank Frequency:");
+            for (int i = 0; i < RankWinCounts.Count; i++ )
+            {
+                results.Add(string.Format("{0}: {1} ({2:P})", WinnerChecker.Ranks[i], RankWinCounts[i], (double)RankWinCounts[i] / NumHands));
+            }
+            output.AppendToTop(results);
         }
 
         public void PrintOutputToFile(string filePath)
