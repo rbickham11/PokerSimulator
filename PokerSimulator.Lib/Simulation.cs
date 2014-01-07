@@ -73,7 +73,7 @@ namespace PokerSimulator.Lib
         public void Run(int hands, bool randomChange)
         {
             NumHands = hands;
-            winnerChecker = new WinnerChecker(output, DealtHands.Count / 2);
+            winnerChecker = new WinnerChecker();
             if(!randomChange)
             {
                 RandomHands = 0;
@@ -223,7 +223,7 @@ namespace PokerSimulator.Lib
             results.Add(string.Format("Set Board: "));
             foreach (int card in SetBoard)
             {
-                results[results.Count - 1] += Deck.CardToString(card);
+                results[results.Count - 1] += (Deck.CardToString(card) + " ");
             }
 
             for (int i = 1; i < PlayerWinCounts.Count; i++)

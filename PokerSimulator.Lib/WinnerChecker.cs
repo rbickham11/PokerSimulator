@@ -9,39 +9,30 @@ namespace PokerSimulator.Lib
     {
         public static readonly List<string> Ranks = new List<string>() { "High Card", "Pair", "Two Pair", "Three of a Kind", "Straight", "Flush", "Full House", "Four of a Kind", "Straight Flush" };
 
-        private SimulationOutput simOutput;
-        private List<int> hands;
-        private List<int> board;     
-        private List<int> thisHand;
-        private List<int> handValues;
-        private BitArray dontCheck;
+        private List<int> board;
 
         public int WinningPlayer { get; private set; }
         public int WinningRank { get; private set; }
 
-        public WinnerChecker(SimulationOutput file, int handsDealt)
+        public void FindWinner(List<int> hands, List<int> inBoard)
         {
-            simOutput = file;
-            thisHand = new List<int>() { -1, -1, -1, -1, -1, -1, -1 };
-        }
-
-        public void FindWinner(List<int> inHands, List<int> inBoard)
-        {
-            hands = inHands;
-            board = inBoard;
+            board = new List<int>(inBoard);
+            List<int> thisHand = new List<int>() { -1, -1, -1, -1, -1, -1, -1 };
 
             int i, j, k;
             bool handFound = false;
             List<int> rankWinners = new List<int>();
             List<int> fiveCardHands;
 
-            dontCheck = new BitArray(Ranks.Count);
-            
-            eliminateHands();
+            BitArray dontCheck = EliminateHands(); 
 
+            //Assigning board values to first 5 positions of hand being checked
             for (i = 0; i < 5; i++)
+            {
                 thisHand[i] = board[i];
+            }
 
+            //For each rank, from high to low, until a matching hand is found.
             for (i = 8; handFound == false; i--)
             {
                 if (!dontCheck[i])
@@ -51,9 +42,7 @@ namespace PokerSimulator.Lib
                         thisHand[5] = hands[j];
                         thisHand[6] = hands[j + 1];
 
-                        handValues = GetValueList(thisHand);
-                        handValues.Sort();
-                        if (rankCheck(i))
+                        if (RankCheck(thisHand, i))
                         {
                             handFound = true;
                             rankWinners.Add(thisHand[5]);
@@ -65,24 +54,38 @@ namespace PokerSimulator.Lib
             WinningRank = i + 1;
 
             if (rankWinners.Count == 2)  //If there's only one hand with the winning rank
+            {
                 WinningPlayer = hands.IndexOf(rankWinners[0]) / 2 + 1;
+            }
             else
             {
-                fiveCardHands = getFiveCardHands(rankWinners, WinningRank);
+                fiveCardHands = GetFiveCardHands(rankWinners, WinningRank);
                 var possibleWinner = new BitArray(fiveCardHands.Count / 5, true);
                 int possibleCount = possibleWinner.Count;
+
+                //For each card position (highest ranking card to lowest)
                 for (i = 4; i >= 0; i--)
                 {
-                    if(possibleCount == 1)
-                        break;
+                    //If there's only one hand left (best hand found)
+                    if (possibleCount == 1)
+                    { 
+                        break; 
+                    }
+
+                    //For each five card hand
                     for (j = 0; j < fiveCardHands.Count; j += 5)
                     {
+                        //If the hand hasn't been eliminated 
                         if (possibleWinner[j / 5])
                         {
+                            //For each other 5 card hand
                             for (k = 0; k < fiveCardHands.Count; k += 5)
                             {
+                                //If the hand isn't the current one we are checking
                                 if (k != j)
                                 {
+                                    //If the hand we're checking this one against is a possible winner and the current card in this hand
+                                    //is less than the card in the same position in the hand we are checking this one against, eliminate this hand.
                                     if (possibleWinner[k / 5] && fiveCardHands[j + i] < fiveCardHands[k + i])
                                     {
                                         possibleWinner[j / 5] = false;
@@ -94,35 +97,49 @@ namespace PokerSimulator.Lib
                         }
                     }
                 }
+
+                //If there is more than one winner (More than one of the same 5 card hand)
                 if (possibleCount > 1)
-                    WinningPlayer = 0;
+                {
+                    WinningPlayer = 0;  //Chopped pot
+                }
                 else
                 {
                     for (i = 0; i < possibleWinner.Count; i++)
+                    {
                         if (possibleWinner[i] == true)
+                        {
+                            WinningPlayer = hands.IndexOf(rankWinners[i * 2]) / 2 + 1;
                             break;
-                    WinningPlayer = hands.IndexOf(rankWinners[i * 2]) / 2 + 1;
+                        }
+                    }
                 }
             }
         }
 
-        public void eliminateHands()
+        /// <summary>
+        /// Eliminate impossible hands based on board.
+        /// <returns>Returns a <c>BitArray</c> with ranks not to check for set to <c>true</c></returns>
+        /// </summary>
+        private BitArray EliminateHands()
         {
             int i;
             bool draw = false;
 
             List<int> BoardValues = GetValueList(board);
             List<int> BoardSuits = GetSuitList(board);
-
+            BitArray dontCheck = new BitArray(Ranks.Count);
             switch (BoardValues.Distinct().Count())
             {
                 case 2: //Must be Four of a Kind or Full House
                     for (i = 0; i < dontCheck.Count; i++)
                     {
                         if (i != 7 && i != 6)
+                        {
                             dontCheck[i] = true;
+                        }
                     }
-                    return;
+                    return dontCheck;
                 case 3:
                 case 4:
                     break;
@@ -168,26 +185,46 @@ namespace PokerSimulator.Lib
                 dontCheck[4] = true;
                 dontCheck[8] = true;
             }
-
+            return dontCheck;
         }
 
-        public bool rankCheck(int rank)
+        /// <summary>
+        /// Determines whether a given seven card hand (board + hole cards) is of a certain rank.
+        /// </summary>
+        /// <param name="hand">The hand to check.</param>
+        /// <param name="rank">The rank to check the hand against.</param>
+        /// <returns></returns>
+        private bool RankCheck(List<int> hand, int rank)
         {
+            if(hand.Count != 7)
+            {
+                throw new ArgumentException("Hand to check must be of length 7.");
+            }
+
             int i, j, k, temp;
-            List<int> tempHand;
             bool pairFound = false;
+
+            List<int> handValues = GetValueList(hand);
+            handValues.Sort();
+
             switch (rank)
             {
                 case 8:  //Straight Flush
-                    tempHand = new List<int>(thisHand);
+                    var tempHand = new List<int>(hand);
                     tempHand.Sort();
-                    if (isStraight(tempHand) && isStraight(GetValueList(tempHand))) //This is a straight flush becuase thisHand values are still numbered 0-51
-                        return true;                                                //Second check eliminates overlap (Ex: Q-K-A-2-3)
+                    if (IsStraight(tempHand) && IsStraight(GetValueList(tempHand))) //This is a straight flush becuase "hand" values are still numbered 0-51
+                    {                                                               //Second check eliminates overlap (Ex: Q-K-A-2-3)
+                        return true;                                                
+                    }
                     return false;
                 case 7:  //Four of a Kind
                     for (i = 3; i < handValues.Count; i++)
+                    {
                         if (handValues[i] == handValues[i - 3])
+                        {
                             return true;
+                        }
+                    }
                     return false;
                 case 6:  //Full House
                     for (i = 2; i < handValues.Count; i++)
@@ -201,31 +238,41 @@ namespace PokerSimulator.Lib
                                 if (handValues[j] == handValues[j - 1])
                                 {
                                     for (k = 0; k < 3; k++)
+                                    {
                                         handValues.Add(temp);
+                                    }
                                     handValues.Sort();
                                     return true;
                                 }
                             }
                             for (k = 0; k < 3; k++)
+                            {
                                 handValues.Add(temp);
+                            }
                             handValues.Sort();
                             return false;
                         }
                     }
                     return false;
                 case 5:  //Flush
-                    if (isFlush(thisHand))
+                    if (IsFlush(hand))
+                    {
                         return true;
+                    }
                     return false;
                 case 4:  //Straight
-                    if (isStraight(handValues))
+                    if (IsStraight(handValues))
+                    {
                         return true;
+                    }
                     return false;
                 case 3:  //Three of a Kind
                     for (i = 2; i < handValues.Count; i++)
                     {
                         if (handValues[i] == handValues[i - 2])
+                        {
                             return true;
+                        }
                     }
                     return false;
                 case 2:  //Two Pair
@@ -243,7 +290,9 @@ namespace PokerSimulator.Lib
                             for (j = i; j < handValues.Count; j++)
                             {
                                 if (handValues[j] == handValues[j - 1])
+                                {
                                     return true;
+                                }
                             }
 
                         }
@@ -253,7 +302,9 @@ namespace PokerSimulator.Lib
                     for (i = 1; i < handValues.Count; i++)
                     {
                         if (handValues[i] == handValues[i - 1])
+                        {
                             return true;
+                        }
                     }
                     return false;
                 case 0:  //High Card
@@ -265,24 +316,30 @@ namespace PokerSimulator.Lib
             return false;
         }
 
-        public List<int> getFiveCardHands(List<int> rankWinners, int rank)
+        /// <summary>
+        /// Gets the best five card hand from each seven card hand with the winning rank for final comparison.
+        /// </summary>
+        /// <param name="highestRankedHands">List of all hole cards that have the winning rank.</param>
+        /// <param name="winningRank">The winning rank</param>
+        /// <returns>A list of the five card hands, ordered from lowest ranking card to highest.</returns>
+        private List<int> GetFiveCardHands(List<int> highestRankedHands, int winningRank)
         {
-            int i, j, k;
+            int i, j, k, dupCard;
             List<int> fiveCardHands = new List<int>();
             List<int> sevenCardHand;
 
-            for (i = 0; i < rankWinners.Count; i += 2)
+            for (i = 0; i < highestRankedHands.Count; i += 2)
             {
                 sevenCardHand = new List<int>(board);
-                sevenCardHand.Add(rankWinners[i]);
-                sevenCardHand.Add(rankWinners[i + 1]);
-                if(rank != 5 && rank != 8)
+                sevenCardHand.Add(highestRankedHands[i]);
+                sevenCardHand.Add(highestRankedHands[i + 1]);
+                if(winningRank != 5 && winningRank != 8)
                 {
                     sevenCardHand = GetValueList(sevenCardHand);
                 }
                 sevenCardHand.Sort();
 
-                switch (rank)
+                switch (winningRank)
                 {
                     case 0: //High Card
                         sevenCardHand.RemoveRange(0, 2);
@@ -291,17 +348,25 @@ namespace PokerSimulator.Lib
                     case 1: //Pair
                     case 2: //Two Pair
                         for (j = sevenCardHand.Count - 2; j >= 0; j--)
-                            if(sevenCardHand[j] == sevenCardHand[j + 1])
+                        {
+                            if (sevenCardHand[j] == sevenCardHand[j + 1])
+                            {
                                 break;
-                        int dupCard = sevenCardHand[j];
+                            }
+                        }
+                        dupCard = sevenCardHand[j];
                         sevenCardHand.RemoveRange(j, 2);
                         sevenCardHand.Add(dupCard);
                         sevenCardHand.Add(dupCard);
-                        if (rank == 2)
+                        if (winningRank == 2)
                         {
                             for (j = sevenCardHand.Count - 4; j >= 0; j--)
+                            {
                                 if (sevenCardHand[j] == sevenCardHand[j + 1])
+                                {
                                     break;
+                                }
+                            }
                             dupCard = sevenCardHand[j];
                             sevenCardHand.RemoveRange(j, 2);
                             sevenCardHand.Insert(3, dupCard);
@@ -312,12 +377,18 @@ namespace PokerSimulator.Lib
                         break;
                     case 3: //Three of a Kind
                         for (j = sevenCardHand.Count - 3; j >= 0; j--)
+                        {
                             if (sevenCardHand[j] == sevenCardHand[j + 2])
+                            {
                                 break;
+                            }
+                        }
                         dupCard = sevenCardHand[j];
                         sevenCardHand.RemoveRange(j, 3);
                         for (k = 0; k < 3; k++)
+                        {
                             sevenCardHand.Add(dupCard);
+                        }
                         sevenCardHand.RemoveRange(0, 2);
                         fiveCardHands.AddRange(sevenCardHand);
                         break;
@@ -337,7 +408,9 @@ namespace PokerSimulator.Lib
                             if (sevenCardHand[j] == sevenCardHand[j - 4] + 4)
                             {
                                 for (k = j; k > j - 5; k--)
+                                {
                                     fiveCardHands.Add(sevenCardHand[k]);
+                                }
                                 break;
                             }
                         }
@@ -349,23 +422,38 @@ namespace PokerSimulator.Lib
                             if (GetSuit(sevenCardHand[j]) == GetSuit(sevenCardHand[j - 4]))
                             {
                                 for (k = j; k > j - 5; k--)
+                                {
                                     fiveCardHands.Add(GetCardValue(sevenCardHand[k]));
+                                }
                                 break;
                             }
                         }
                         break;
                     case 6: //Full House
+                        dupCard = -1;
                         for (j = 0; j < sevenCardHand.Count - 2; j++)
+                        {
                             if (sevenCardHand[j] == sevenCardHand[j + 2])
-                                break;
-                        dupCard = sevenCardHand[j];
-                        sevenCardHand.RemoveRange(j, 3);
+                            {
+                                if (sevenCardHand[j] > dupCard) 
+                                {
+                                    dupCard = sevenCardHand[j];
+                                }
+                            }
+                        }
+                        sevenCardHand.RemoveRange(sevenCardHand.IndexOf(dupCard), 3);
                         for (k = 0; k < 3; k++)
+                        {
                             sevenCardHand.Add(dupCard);
+                        }
 
                         for (j = sevenCardHand.Count - 4; j >= 0; j--)
+                        {
                             if (sevenCardHand[j] == sevenCardHand[j + 1])
+                            {
                                 break;
+                            }
+                        }
                         dupCard = sevenCardHand[j];
                         sevenCardHand.RemoveRange(j, 2);
                         sevenCardHand.Insert(2, dupCard);
@@ -376,14 +464,19 @@ namespace PokerSimulator.Lib
                         break;
                     case 7: //Four of a Kind
                         for (j = 0; j < sevenCardHand.Count - 3; j++)
+                        {
                             if (sevenCardHand[j] == sevenCardHand[j + 3])
+                            {
                                 break;
+                            }
+                        }
                         dupCard = sevenCardHand[j];
                         sevenCardHand.RemoveRange(j, 4);
                         for (k = 0; k < 4; k++)
+                        {
                             sevenCardHand.Add(dupCard);
-                        
-                            sevenCardHand.RemoveRange(0, 2);
+                        }
+                        sevenCardHand.RemoveRange(0, 2);
                         fiveCardHands.AddRange(sevenCardHand);
                         break;
                     case 8: //Straight Flush
@@ -394,7 +487,9 @@ namespace PokerSimulator.Lib
                                 if (GetCardValue(sevenCardHand[j]) == GetCardValue(sevenCardHand[j - 4]) + 4)
                                 {
                                     for (k = j; k > j - 5; k--)
+                                    {
                                         fiveCardHands.Add(GetCardValue(sevenCardHand[k]));
+                                    }
                                     break;
                                 }
                             }
@@ -407,7 +502,7 @@ namespace PokerSimulator.Lib
             }
             return fiveCardHands;
         }
-        public bool isStraight(List<int> hand)
+        private bool IsStraight(List<int> hand)
         {
             var distinctHand = new List<int>(hand.Distinct());
 
@@ -421,7 +516,7 @@ namespace PokerSimulator.Lib
             return false;
         }
 
-        public bool isFlush(List<int> hand)
+        private bool IsFlush(List<int> hand)
         {
             hand = GetSuitList(hand);
             hand.Sort();
@@ -432,22 +527,22 @@ namespace PokerSimulator.Lib
             return false;
         }
 
-        public int GetCardValue(int card)
+        private int GetCardValue(int card)
         {
             return card % 13;
         }
 
-        public int GetSuit(int card)
+        private int GetSuit(int card)
         {
             return card / 13;
         }
 
-        public List<int> GetValueList(List<int> cards)
+        private List<int> GetValueList(List<int> cards)
         {
             return (from c in cards select c % 13).ToList();
         }
 
-        public List<int> GetSuitList(List<int> cards)
+        private List<int> GetSuitList(List<int> cards)
         {
             return (from c in cards select c / 13).ToList();
         }
