@@ -5,52 +5,84 @@
 }
 
 <h2>Index</h2>
+<h4>New Simulation</h4>
+<hr />
 
-
-@using (Html.BeginForm()) 
+@using (Html.BeginForm())
 {
-    @Html.AntiForgeryToken()
-    
-    <div class="form-horizontal">
-        <h4>SimulationRequestModel</h4>
-        <hr />
-        @Html.ValidationSummary(true)
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.RandomHands, new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.RandomHands)
-                @Html.ValidationMessageFor(model => model.RandomHands)
+    <div class="row">
+        <div class="col-md-4" id="hands_form">
+            <h4>Hands</h4>
+            <label for="SetHands" class="control-label col-md-5">Hand #1:</label>
+            <div class="col-md-3">
+                <input type="number" class="text-box single-line" name="SetHands"/>
+            </div>
+            <div class="col-md-3">
+                <input type="number" class="text-box single-line" name="SetHands"/>
             </div>
         </div>
+        <div class="col-md-4">
+            <h4>Options</h4>
+            @Html.AntiForgeryToken()
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.HandsToSimulate, new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.HandsToSimulate)
-                @Html.ValidationMessageFor(model => model.HandsToSimulate)
+            <div class="form-horizontal">
+                <hr />
+                @Html.ValidationSummary(true)
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.RandomHands, new { @class = "control-label col-md-5" })
+                    <div class="col-md-7">
+                        @Html.EditorFor(model => model.RandomHands)
+                        @Html.ValidationMessageFor(model => model.RandomHands)
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.HandsToSimulate, new { @class = "control-label col-md-5" })
+                    <div class="col-md-7">
+                        @Html.EditorFor(model => model.HandsToSimulate)
+                        @Html.ValidationMessageFor(model => model.HandsToSimulate)
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.RandomChange, new { @class = "control-label col-md-5" })
+                    <div class="col-md-7">
+                        @Html.EditorFor(model => model.RandomChange)
+                        @Html.ValidationMessageFor(model => model.RandomChange)
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-8">
+                        <input type="submit" value="Create" class="btn btn-default" />
+                    </div>
+                </div>
             </div>
         </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.RandomChange, new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.RandomChange)
-                @Html.ValidationMessageFor(model => model.RandomChange)
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Create" class="btn btn-default" />
-            </div>
+        <div class="col-md-4">
+            @if(Model != null)
+            {
+                <h4>You Inputted:</h4>
+                <dl class="dl-horizontal">
+                    <dt>Hands</dt>
+                    <dd>
+                        @foreach(var item in Model.SetHands)
+                        {
+                            @: @item
+                        }
+                    </dd>
+                    <dt>Random Hands</dt>
+                    <dd>@Model.RandomHands</dd>
+                    <dt>Hands to Simulate</dt>
+                    <dd>@Model.HandsToSimulate</dd>
+                    <dt>Random Change</dt>
+                    <dd>@Model.RandomChange</dd>
+                </dl>
+            }
         </div>
     </div>
 }
-
-<div>
-    @Html.ActionLink("Back to List", "Index")
-</div>
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
