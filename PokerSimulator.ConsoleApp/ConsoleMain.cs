@@ -10,6 +10,7 @@ namespace PokerSimulator.ConsoleApp
     class ConsoleMain
     {
         private Simulation simulation = new Simulation();
+        private SimulationOutput simOutput = new SimulationOutput();
 
         static void Main(string[] args)
         {
@@ -60,7 +61,7 @@ namespace PokerSimulator.ConsoleApp
                     cards.Add(Deck.CardFromString(handString[1]));
                     simulation.AddHand(cards);
                     handsDealt++;
-                    simulation.PrintPlayerHand(true, handsDealt, cards);
+                    PrintHand(handsDealt, simulation.DealtHands.GetRange(handsDealt * 2 - 2, 2));
                 }
                 catch (Exception ex)
                 {
@@ -86,7 +87,7 @@ namespace PokerSimulator.ConsoleApp
                             simulation.AddRandomHands(randomHands);
                             for (int j = handsDealt * 2; j < simulation.DealtHands.Count; j += 2)
                             {
-                                simulation.PrintPlayerHand(true, j / 2 + 1, simulation.DealtHands.GetRange(j, 2));
+                                PrintHand(j / 2 + 1, simulation.DealtHands.GetRange(j, 2));
                             }
                             handsDealt += randomHands;
                         }
@@ -168,12 +169,21 @@ namespace PokerSimulator.ConsoleApp
                     Console.WriteLine("Please enter a valid number");
             }
             PrintResults();
+
+            simOutput.PrintResults(simulation);
+            simOutput.PrintHands(simulation.SimulatedHands);
+
             stopWatch.Stop();
             Console.WriteLine("({0}ms)", stopWatch.ElapsedMilliseconds);
             
             string filePath = @"SimulationResults.txt";
-            simulation.PrintOutputToFile(filePath);
+            simOutput.WriteLinesToFile(filePath);
             Process.Start(filePath);
+        }
+
+        public void PrintHand(int player, List<int> hand)
+        {
+            Console.WriteLine("Player {0}'s hand is: {1} {2}", player, Deck.CardToString(hand[0]), Deck.CardToString(hand[1]));
         }
 
         public void PrintResults()

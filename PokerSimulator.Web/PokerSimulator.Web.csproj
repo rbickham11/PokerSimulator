@@ -124,8 +124,9 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Models\SimulatedHand.cs" />
+    <Compile Include="Models\SimulatedHandModel.cs" />
     <Compile Include="Models\SimulationRequestModel.cs" />
+    <Compile Include="Models\SimulationResultModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
