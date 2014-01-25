@@ -59,7 +59,7 @@ namespace PokerSimulator.Lib
             AddLine("Simulation Results:");
             AddLine("---------------------------------------------------------------");
 
-            AppendLine(string.Format("Set Board: "));
+            AppendLine("Set Board: ");
             foreach (int card in simulation.SetBoard)
             {
                 AppendLine(Deck.CardToString(card) + " ");
