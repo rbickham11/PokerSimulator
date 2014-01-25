@@ -12,7 +12,7 @@ namespace PokerSimulator.Web.Models
     {
         public IEnumerable<int> SetHands { get; set; }
         [Required]
-        [Display(Name=("Random Hands"))]
+        [Display(Name=("Additional Random Hands"))]
         public int RandomHands { get; set; }
         public IEnumerable<int> SetBoard { get; set; }
         [Required] 

@@ -4,7 +4,7 @@
     ViewBag.Title = "Index";
 }
 
-<h2>Index</h2>
+<h2>Simulator</h2>
 <h4>New Simulation</h4>
 <hr />
 
@@ -12,14 +12,12 @@
 {
 <div class="row">
     <div class="col-md-4">
-        <div id="hands_form">
-            <h4>Hands</h4>
-            <label for="SetHands" class="control-label col-md-5">Hand #1:</label>
-            <input style="width:100px;" type="number" class="text-box single-line" name="SetHands" />
-            <input style="width:100px;" type="number" class="text-box single-line" name="SetHands" />
-            <br />
+        <h4>Set Hands</h4>
+        <div id="handsForm">
+
         </div>
         <button type="button" class="btn btn-success" id="addHand">Add Hand</button>
+        <button type="button" class="btn btn-danger" id="removeHand">Remove Hand</button>
     </div>
     <div class="col-md-4">
         <h4>Options</h4>
@@ -55,7 +53,7 @@
 
             <div class="form-group">
                 <div class="col-md-offset-2 col-md-8">
-                    <input type="submit" value="Create" class="btn btn-default" />
+                    <input type="submit" value="Create" class="btn btn-primary" />
                 </div>
             </div>
         </div>
