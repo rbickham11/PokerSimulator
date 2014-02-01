@@ -10,6 +10,7 @@ namespace PokerSimulator.Web.Models
 {
     public class SimulationRequestModel
     {
+        [Range(0, 51)]
         public IEnumerable<int> SetHands { get; set; }
         [Required]
         [Display(Name=("Additional Random Hands"))]

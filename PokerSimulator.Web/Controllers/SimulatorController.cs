@@ -6,6 +6,7 @@ using System.Web.Mvc;
 
 using PokerSimulator.Web.Models;
 using PokerSimulator.Lib;
+using System.Diagnostics;
 
 namespace PokerSimulator.Web.Controllers
 {
@@ -46,9 +47,9 @@ namespace PokerSimulator.Web.Controllers
                 RankWinCounts = simulation.RankWinCounts,
                 SimulatedHands = (IEnumerable<SimulatedHand>)simulation.SimulatedHands
             };
-            return Json(response);
-            //rawOutput.WriteLinesToFile(@"SimulationResults.txt");
-            //return new FilePathResult(@"SimulationResults.txt", "text/plain");
+            //return Json(response);
+            rawOutput.WriteLinesToFile(Server.MapPath("~") + @"/SimulationResults.txt");
+            return new FilePathResult("~/SimulationResults.txt", "text/plain");
         }
 	}
 }

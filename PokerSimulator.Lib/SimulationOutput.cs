@@ -11,7 +11,6 @@ namespace PokerSimulator.Lib
         {
             lines = new List<string>();
             lines.Add("");
-            lines.Add("");
         }
 
         public void PrintHands(List<SimulatedHand> simulatedHands)
@@ -60,9 +59,16 @@ namespace PokerSimulator.Lib
             AddLine("---------------------------------------------------------------");
 
             AppendLine("Set Board: ");
-            foreach (int card in simulation.SetBoard)
+            if (simulation.SetBoard.Count > 0)
             {
-                AppendLine(Deck.CardToString(card) + " ");
+                foreach (int card in simulation.SetBoard)
+                {
+                    AppendLine(Deck.CardToString(card) + " ");
+                }
+            }
+            else
+            {
+                AppendLine("None");
             }
             AddLine();
             for (int i = 1; i < simulation.PlayerWinCounts.Count; i++)

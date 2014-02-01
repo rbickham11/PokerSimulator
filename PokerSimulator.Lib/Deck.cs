@@ -25,8 +25,10 @@ namespace PokerSimulator.Lib
 
         public void Print()
         {
-            foreach (int i in deck)
-                Console.WriteLine(CardToString(i));
+            foreach (int card in deck)
+            {
+                Console.WriteLine(CardToString(card) + "(" + card + ")");
+            }
         }
         
         public void Shuffle()
