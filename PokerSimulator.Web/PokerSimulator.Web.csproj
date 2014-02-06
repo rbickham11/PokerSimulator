@@ -127,7 +127,6 @@
     <Compile Include="Models\SimulationRequestModel.cs" />
     <Compile Include="Models\SimulationResultModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="WinnerChecker.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.css" />
