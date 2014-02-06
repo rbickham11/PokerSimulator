@@ -17,27 +17,27 @@ namespace PokerSimulator.Lib
         public void FindWinner(List<int> hands, List<int> inBoard)
         {
             board = new List<int>(inBoard);
-            var thisHand = new List<int>();
-            var rankWinners = new List<int>();
+            List<int> thisHand = new List<int>() { -1, -1, -1, -1, -1, -1, -1 };
 
-            BitArray dontCheck = EliminateHands();
+            int i, j, k;
+            bool handFound = false;
+            List<int> rankWinners = new List<int>();
+            List<int> fiveCardHands;
 
-            int i;
+            BitArray dontCheck = EliminateHands(); 
+
             //Assigning board values to first 5 positions of hand being checked
             for (i = 0; i < 5; i++)
             {
-                thisHand.Add(board[i]);
+                thisHand[i] = board[i];
             }
-            thisHand.Add(-1);
-            thisHand.Add(-1);
 
-            bool handFound = false;
             //For each rank, from high to low, until a matching hand is found.
             for (i = 8; handFound == false; i--)
             {
                 if (!dontCheck[i])
                 {
-                    for (int j = 0; j < hands.Count; j += 2)
+                    for (j = 0; j < hands.Count; j += 2)
                     {
                         thisHand[5] = hands[j];
                         thisHand[6] = hands[j + 1];
@@ -59,7 +59,7 @@ namespace PokerSimulator.Lib
             }
             else
             {
-                var fiveCardHands = GetFiveCardHands(rankWinners, WinningRank);
+                fiveCardHands = GetFiveCardHands(rankWinners, WinningRank);
                 var possibleWinner = new BitArray(fiveCardHands.Count / 5, true);
                 int possibleCount = possibleWinner.Count;
 
@@ -73,13 +73,13 @@ namespace PokerSimulator.Lib
                     }
 
                     //For each five card hand
-                    for (int j = 0; j < fiveCardHands.Count; j += 5)
+                    for (j = 0; j < fiveCardHands.Count; j += 5)
                     {
                         //If the hand hasn't been eliminated 
                         if (possibleWinner[j / 5])
                         {
                             //For each other 5 card hand
-                            for (int k = 0; k < fiveCardHands.Count; k += 5)
+                            for (k = 0; k < fiveCardHands.Count; k += 5)
                             {
                                 //If the hand isn't the current one we are checking
                                 if (k != j)

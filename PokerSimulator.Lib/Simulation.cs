@@ -23,15 +23,15 @@ namespace PokerSimulator.Lib
         {
             SetBoard = new List<int>();
             DealtHands = new List<int>();
-            deck.Shuffle();
-            RandomHands = 0;
             PlayerWinCounts = new List<int>();
             RankWinCounts = new List<int>();
             SimulatedHands = new List<SimulatedHand>();
+            RandomHands = 0;
             for(int i = 0; i < WinnerChecker.Ranks.Count; i++)
             {
                 RankWinCounts.Add(0);
             }
+            deck.Shuffle();
         }
 
         public void AddHand(List<int> hand)

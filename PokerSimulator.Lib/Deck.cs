@@ -9,15 +9,14 @@ namespace PokerSimulator.Lib
         private static readonly List<char> cardValues = new List<char>() { '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A' };
         private static readonly List<char> suitValues = new List<char>() { 'D', 'H', 'C', 'S' };
         
-        private Random random;
         private List<int> deck;
         private List<int> dealtCards;
+        private Random random;
 
         public Deck()
         {
-            deck = new List<int>();
             random = new Random();
-
+            deck = new List<int>();
             dealtCards = new List<int>();
             for (int i = 0; i < DeckSize; i++)
                 deck.Add(i);

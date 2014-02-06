@@ -93,46 +93,26 @@ namespace PokerSimulator.Lib
                 AddLine(string.Format("{0}: {1} ({2:P})", WinnerChecker.Ranks[i], simulation.RankWinCounts[i], (double)simulation.RankWinCounts[i] / simulation.NumHands));
             }
         }
-        public void AddLine()
-        {
-            lines.Add("");
-        }
 
-        public void AddLine(string outString)
-        {
-            lines[lines.Count - 1] = lines[lines.Count - 1] + outString;
-            lines.Add("");
-        }
-
-        public void AddTopLine()
-        {
-            lines.Insert(0, "");
-        }
-
-        public void AddTopLine(string outString)
-        {
-            lines[0] = lines[0] + outString;
-            lines.Insert(0, "");
-        }
-
-        public void AppendToTop(List<string> topLines)
-        {
-            lines.InsertRange(0, topLines);
-        }
-
-        public void AppendLine(string outString)
-        {
-            lines[lines.Count - 1] = lines[lines.Count - 1] + outString;
-        }
-
-        public void AppendTopLine(string outString)
-        {
-            lines[0] = lines[0] + outString;
-        }
-        
         public void WriteLinesToFile(string path)
         {
             File.WriteAllLines(path, lines);
+        }
+
+        private void AddLine()
+        {
+            lines.Add("");
+        }
+
+        private void AddLine(string outString)
+        {
+            lines[lines.Count - 1] = lines[lines.Count - 1] + outString;
+            lines.Add("");
+        }
+
+        private void AppendLine(string outString)
+        {
+            lines[lines.Count - 1] = lines[lines.Count - 1] + outString;
         }
     }
 }

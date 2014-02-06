@@ -22,14 +22,8 @@ namespace PokerSimulator.ConsoleApp
         public void GetUserInput()
         {
             string inString;
-            string[] handString = new string[2];
-            List<string> boardStrings;
-            int numHands;
-            bool randomChange = false;
             int randomHands;
-            List<int> cards = new List<int>();
-
-            var stopWatch = new Stopwatch();
+            var cards = new List<int>();
 
             while (true)
             {
@@ -51,7 +45,7 @@ namespace PokerSimulator.ConsoleApp
                         Console.WriteLine("Invalid hand");
                         continue;
                     }
-                    handString = inString.Split(' ');
+                    string[] handString = inString.Split(' ');
 
                     if (handString[0] == handString[1])
                     {
@@ -108,6 +102,8 @@ namespace PokerSimulator.ConsoleApp
                         break;
                     }
                 }
+                
+                bool randomChange = false;
                 if (randomHands > 0)
                 {
                     Console.WriteLine("Do you want different random hands dealt each time?");
@@ -131,7 +127,7 @@ namespace PokerSimulator.ConsoleApp
                     {
                         break;
                     }
-                    boardStrings = new List<string>(inString.Split(' '));
+                    var boardStrings = new List<string>(inString.Split(' '));
                     if (boardStrings.Distinct().Count() != boardStrings.Count)
                     {
                         Console.WriteLine("All cards must be distinct");
@@ -158,8 +154,11 @@ namespace PokerSimulator.ConsoleApp
                         Console.WriteLine(ex.Message);
                     }
                 }
+
+                var stopWatch = new Stopwatch();
                 while (true)
                 {
+                    int numHands;
                     Console.Write("Number of hands to simulate: ");
                     inString = Console.ReadLine();
                     if (int.TryParse(inString, out numHands))
