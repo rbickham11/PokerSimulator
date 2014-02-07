@@ -13,8 +13,8 @@
 <div class="row">
     <div class="col-md-4">
         <h4>Set Hands</h4>
-        <div id="handsForm">
-
+        <div id="handsForm" class="form-horizontal">
+            <hr />
         </div>
         <button type="button" class="btn btn-success" id="addHand">Add Hand</button>
         <button type="button" class="btn btn-danger" id="removeHand">Remove Hand</button>
@@ -30,7 +30,7 @@
             <div class="form-group">
                 @Html.LabelFor(model => model.RandomHands, new { @class = "control-label col-md-5" })
                 <div class="col-md-7">
-                    @Html.EditorFor(model => model.RandomHands)
+                    @Html.TextBoxFor(model => model.RandomHands, new { @class = "form-control", type = "number" })
                     @Html.ValidationMessageFor(model => model.RandomHands)
                 </div>
             </div>
@@ -38,7 +38,7 @@
             <div class="form-group">
                 @Html.LabelFor(model => model.HandsToSimulate, new { @class = "control-label col-md-5" })
                 <div class="col-md-7">
-                    @Html.EditorFor(model => model.HandsToSimulate)
+                    @Html.TextBoxFor(model => model.HandsToSimulate, new { @class = "form-control", type = "number" })
                     @Html.ValidationMessageFor(model => model.HandsToSimulate)
                 </div>
             </div>

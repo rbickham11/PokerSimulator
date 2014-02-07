@@ -41,6 +41,11 @@ input[type="checkbox"].input-validation-error {
     display: none;
 }
 
-.handInput {
+.handInputSet {
     margin-bottom: 10px;
+}
+
+.handInputBox {
+    width: 100px;
+    display: inline;
 }
