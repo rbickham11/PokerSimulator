@@ -45,7 +45,7 @@ input[type="checkbox"].input-validation-error {
     margin-bottom: 10px;
 }
 
-.handInputBox {
+.cardInputBox {
     width: 100px;
     display: inline;
 }

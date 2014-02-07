@@ -9,15 +9,15 @@ namespace PokerSimulator.Web.Controllers
     public class SimulatorController : Controller
     {
         //
-        // GET: /Simulator/
-        public ActionResult Index()
+        // GET: /Simulator/Holdem
+        public ActionResult Holdem()
         {
             return View();
         }
 
-        //POST: /Simulator/
+        //POST: /Simulator/Holdem
         [HttpPost]
-        public ActionResult Index(SimulationRequestModel request)
+        public ActionResult Holdem(SimulationRequestModel request)
         {
             var simulation = new Simulation();
             var rawOutput = new SimulationOutput();

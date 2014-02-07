@@ -165,7 +165,7 @@
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Scripts\jquery-1.10.2.min.map" />
-    <Content Include="Views\Simulator\Index.cshtml" />
+    <Content Include="Views\Simulator\Holdem.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PokerSimulator.Lib\PokerSimulator.Lib.csproj">
