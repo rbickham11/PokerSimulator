@@ -133,7 +133,7 @@ namespace PokerSimulator.Lib
                 DealCardToBoard();  //River
                 
                 winnerChecker.FindWinner(DealtHands, board);
-                
+
                 SimulatedHands.Add(new SimulatedHand
                 {
                     Hands = DealtHands,

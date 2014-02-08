@@ -1,0 +1,27 @@
+﻿@model PokerSimulator.Web.Models.SimulationResultModel
+
+@{
+    ViewBag.Title = "HoldemResult";
+}
+
+<h2>Simulation Results</h2>
+<div>
+	<hr />
+    <dl class="dl-horizontal">
+        <dt>Hands</dt>
+        <dd>
+            @foreach (var item in Model.SetHands) {
+                @: @item
+            }
+        </dd>
+        <dt>Player Win Counts: </dt>
+        <dd>@foreach(var pCount in Model.PlayerWinCounts) { 
+                @: @pCount 
+            }</dd>
+        <dt>Rank Win Counts: </dt>
+        <dd>@foreach(var rCount in Model.RankWinCounts) {
+                @: @rCount 
+            }</dd>
+    </dl>
+
+</div>

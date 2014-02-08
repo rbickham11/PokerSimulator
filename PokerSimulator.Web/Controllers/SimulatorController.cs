@@ -15,9 +15,9 @@ namespace PokerSimulator.Web.Controllers
             return View();
         }
 
-        //POST: /Simulator/Holdem
+        //POST: /Simulator/HoldemResult
         [HttpPost]
-        public ActionResult Holdem(SimulationRequestModel request)
+        public ActionResult HoldemResult(SimulationRequestModel request)
         {
             var simulation = new Simulation();
             var rawOutput = new SimulationOutput();
@@ -43,9 +43,9 @@ namespace PokerSimulator.Web.Controllers
                 RankWinCounts = simulation.RankWinCounts,
                 SimulatedHands = (IEnumerable<SimulatedHand>)simulation.SimulatedHands
             };
-            //return Json(response);
-            rawOutput.WriteLinesToFile(Server.MapPath("~") + @"/SimulationResults.txt");
-            return new FilePathResult("~/SimulationResults.txt", "text/plain");
+            //rawOutput.WriteLinesToFile(Server.MapPath("~") + @"/SimulationResults.txt");
+            //return new FilePathResult("~/SimulationResults.txt", "text/plain");
+            return View(response);
         }
 	}
 }

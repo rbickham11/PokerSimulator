@@ -8,7 +8,7 @@
 <h4>New Simulation</h4>
 <hr />
 
-@using (Html.BeginForm())
+@using (Html.BeginForm("HoldemResult", "Simulator", FormMethod.Post))
 {
 <div class="row">
     <div class="col-md-4">
@@ -53,31 +53,10 @@
 
             <div class="form-group">
                 <div class="col-md-offset-2 col-md-8">
-                    <input type="submit" value="Create" class="btn btn-primary" />
+                    <input type="submit" value="Run" class="btn btn-primary" />
                 </div>
             </div>
         </div>
-    </div>
-    <div class="col-md-4">
-        @if (Model != null)
-        {
-            <h4>You Inputted:</h4>
-            <dl class="dl-horizontal">
-                <dt>Hands</dt>
-                <dd>
-                    @foreach (var item in Model.SetHands)
-                    {
-                        @: @item
-                        }
-                </dd>
-                <dt>Random Hands</dt>
-                <dd>@Model.RandomHands</dd>
-                <dt>Hands to Simulate</dt>
-                <dd>@Model.HandsToSimulate</dd>
-                <dt>Random Change</dt>
-                <dd>@Model.RandomChange</dd>
-            </dl>
-        }
     </div>
 </div>
 }
